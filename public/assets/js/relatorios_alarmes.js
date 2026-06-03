@@ -316,19 +316,7 @@ $(document).ready(function () {
   }
 
   function mostrarMensagemSucesso(mensagem) {
-    const alertDiv = $(`
-            <div class="alert alert-success alert-dismissible fade show position-fixed toast-fixed" 
-                 >
-                <i class="fas fa-check-circle"></i> ${mensagem}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `);
-
-    $('body').append(alertDiv);
-
-    setTimeout(() => {
-      alertDiv.alert('close');
-    }, 3000);
+    window.showToast(mensagem, 'success');
   }
 
   function carregarFiltrosSalvos() {

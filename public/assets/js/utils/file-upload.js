@@ -268,7 +268,7 @@
             }).catch(function (err) {
                 if (progressContainer) progressContainer.classList.add('d-none')
                 if (progressBar) progressBar.style.width = '0%'
-                alert('Erro: ' + err.message)
+                window.showToast('Erro no upload: ' + err.message, 'danger')
                 loadAnexos(container)
             })
         })
@@ -279,10 +279,10 @@
             if (res.success) {
                 loadAnexos(container)
             } else {
-                alert('Erro: ' + (res.error || 'Erro ao excluir'))
+                window.showToast(res.error || 'Erro ao excluir anexo', 'danger')
             }
         }).catch(function () {
-            alert('Erro de conexao')
+            window.showToast('Erro de conexão ao excluir anexo.', 'danger')
         })
     }
 

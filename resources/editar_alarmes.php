@@ -57,8 +57,6 @@ $regiaoList = $regiaoOptions['status'] === 'success' ? array_map(fn($r) => (arra
                 </div>
             </div>
 
-            <div id="messageContainer" class="is-hidden"></div>
-
             <form id="formEditarAlarme" class="needs-validation" novalidate>
                 <input type="hidden" name="id" id="alarme_id">
 

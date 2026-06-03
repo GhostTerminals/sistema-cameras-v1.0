@@ -57,7 +57,7 @@ class SecurityTest extends TestCase
     public function testPasswordPolicyMinLength(): void
     {
         $errors = [];
-        $result = validatePasswordPolicy('Pass1!', $errors);
+        $result = validatePasswordPolicy('12345', $errors);
 
         $this->assertFalse($result);
         $this->assertNotEmpty($errors);
@@ -66,7 +66,7 @@ class SecurityTest extends TestCase
     public function testPasswordPolicyValid(): void
     {
         $errors = [];
-        $result = validatePasswordPolicy('MySecurePass123!', $errors);
+        $result = validatePasswordPolicy('123456', $errors);
 
         $this->assertTrue($result);
         $this->assertEmpty($errors);
@@ -111,12 +111,10 @@ class SecurityTest extends TestCase
 
     public function testGenerateTemporaryPassword(): void
     {
-        $password = generateTemporaryPassword(12);
+        $password = generateTemporaryPassword(6);
 
-        $this->assertGreaterThanOrEqual(8, strlen($password));
-        $this->assertMatchesRegularExpression('/[A-Z]/', $password);
-        $this->assertMatchesRegularExpression('/[a-z]/', $password);
-        $this->assertMatchesRegularExpression('/\d/', $password);
+        $this->assertEquals(6, strlen($password));
+        $this->assertMatchesRegularExpression('/^\d+$/', $password);
     }
 
     public function testDifferentPasswordsDifferentHashes(): void

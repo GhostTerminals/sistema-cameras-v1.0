@@ -11,8 +11,8 @@ define('ACCESS_LEVEL_SUPERVISOR', 2);
 define('ACCESS_LEVEL_ADMIN', 3);
 
 define('CSRF_TOKEN_BYTES', 32);
-define('PASSWORD_MIN_LENGTH', 8);
-define('TEMP_PASSWORD_LENGTH', 12);
+define('PASSWORD_MIN_LENGTH', 6);
+define('TEMP_PASSWORD_LENGTH', 6);
 
 function getCsrfToken(): string
 {
@@ -157,17 +157,8 @@ function validatePasswordPolicy(string $password, ?array &$errors = null): bool
     if (strlen($password) < PASSWORD_MIN_LENGTH) {
         $errors[] = 'A senha deve ter pelo menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
     }
-    if (!preg_match('/[A-Z]/', $password)) {
-        $errors[] = 'A senha deve conter pelo menos uma letra maiuscula.';
-    }
-    if (!preg_match('/[a-z]/', $password)) {
-        $errors[] = 'A senha deve conter pelo menos uma letra minuscula.';
-    }
-    if (!preg_match('/\\d/', $password)) {
-        $errors[] = 'A senha deve conter pelo menos um numero.';
-    }
-    if (!preg_match('/[^A-Za-z0-9]/', $password)) {
-        $errors[] = 'A senha deve conter pelo menos um caractere especial.';
+    if (!preg_match('/^\d+$/', $password)) {
+        $errors[] = 'A senha deve conter apenas numeros.';
     }
 
     return empty($errors);
@@ -197,28 +188,17 @@ function auditEvent($db, string $entidade, ?int $entidadeId, string $operacao, ?
     }
 }
 
-function generateTemporaryPassword(int $length = 12): string
+function generateTemporaryPassword(int $length = 6): string
 {
     $length = max(PASSWORD_MIN_LENGTH, $length);
-    $lower = 'abcdefghjkmnpqrstuvwxyz';
-    $upper = 'ABCDEFGHJKMNPQRSTUVWXYZ';
-    $digits = '23456789';
-    $special = '!@#$%*-_';
-    $all = $lower . $upper . $digits . $special;
+    $digits = '0123456789';
 
-    $password = [
-        $upper[random_int(0, strlen($upper) - 1)],
-        $lower[random_int(0, strlen($lower) - 1)],
-        $digits[random_int(0, strlen($digits) - 1)],
-        $special[random_int(0, strlen($special) - 1)],
-    ];
-
-    while (count($password) < $length) {
-        $password[] = $all[random_int(0, strlen($all) - 1)];
+    $password = '';
+    for ($i = 0; $i < $length; $i++) {
+        $password .= $digits[random_int(0, strlen($digits) - 1)];
     }
 
-    shuffle($password);
-    return implode('', $password);
+    return $password;
 }
 
 // Funções centralizadas de segurança de senha

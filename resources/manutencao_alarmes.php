@@ -31,9 +31,6 @@ requererAcesso('supervisor');
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- Container de mensagens -->
-    <div id="manutencaoMensagem" class="mb-3 is-hidden"></div>
-
     <!-- Seção de Nova Ordem de Serviço -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-warning-subtle">

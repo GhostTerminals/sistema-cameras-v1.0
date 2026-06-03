@@ -23,7 +23,7 @@ services:
       - internal
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/index.php?page=api/api_health"]
+      test: ["CMD", "curl", "-f", "http://localhost/index.php?page=api/api_ping"]
       interval: 30s
       timeout: 10s
       retries: 3

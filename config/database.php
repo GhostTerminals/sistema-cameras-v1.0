@@ -150,10 +150,16 @@ class database
         if (!in_array($table, $tabelasPermitidas, true)) {
             throw new \InvalidArgumentException("Tabela nao permitida: $table");
         }
-        $columns = implode(', ', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
+        $columns = array_keys($data);
+        foreach ($columns as $col) {
+            if (!is_string($col) || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $col)) {
+                throw new \InvalidArgumentException("Nome de coluna invalido: $col");
+            }
+        }
+        $columnsSql = '`' . implode('`, `', $columns) . '`';
+        $placeholders = ':' . implode(', :', $columns);
         
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+        $sql = "INSERT INTO `$table` ($columnsSql) VALUES ($placeholders)";
         return $this->query($sql, $data);
     }
 }

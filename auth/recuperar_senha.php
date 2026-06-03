@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
             if ($result['status'] === 'success' && !empty($result['data'])) {
                 $userData = $result['data'][0];
-                $novaSenha = generateTemporaryPassword(12);
+                $novaSenha = generateTemporaryPassword();
                 $senhaHash = hashPassword($novaSenha);
 
                 $update = $db->query(
@@ -53,36 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 }
 ?>
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
-.page-login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 24px;
-    background: url('<?= BASE_URL ?>/images/tela_fundo.png') no-repeat center center fixed;
-    background-color: #0f1e2f;
-    background-size: min(720px, 85vw) auto;
-    box-shadow:
-        inset 0 0 120px rgba(0, 0, 0, 0.6),
-        inset 0 0 0 6px rgba(255, 255, 255, 0.08);
-}
-
-.page-login .login-wrapper {
-    width: min(420px, 100%);
-}
-
-.page-login .login-card {
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
-    color: #132238;
-    padding: 32px 28px;
-}
-
-.page-login .pass-box {
+.pass-box {
     background: #1a1a2e;
     color: #f0e68c;
     font-family: monospace;
@@ -96,26 +67,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 }
 </style>
 
-<div class="login-wrapper">
-    <div class="login-card">
-        <h3 class="login-title text-center fw-bold mb-3">Recuperar Senha</h3>
-        <hr>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0"><i class="fas fa-key me-2"></i>Recuperar Senha</h4>
+                </div>
+                <div class="card-body">
 
         <?php if ($sucesso): ?>
         <div class="alert alert-success">
             <i class="fas fa-check-circle me-2"></i>Senha temporaria gerada com sucesso!
         </div>
         <div class="mb-3">
-            <label class="form-label fw-bold">Sua nova senha temporaria:</label>
+            <label class="form-label fw-bold">Nova senha temporaria do usuario:</label>
             <div class="pass-box"><?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?></div>
             <div class="form-text mt-2">
                 <i class="fas fa-info-circle me-1"></i>
                 Copie esta senha agora. Por seguranca, ela nao sera exibida novamente.
-                Use-a para fazer login e voce sera forcado a criar uma senha permanente.
+                O usuario devera usar esta senha para fazer login e sera forcado a criar uma nova.
             </div>
         </div>
-        <a href="?page=login" class="btn login-btn w-100 text-white" style="background:#1f3c60;border:none;font-weight:500">
-            <i class="fas fa-arrow-left me-1"></i>Voltar ao Login
+        <a href="?page=recuperar_senha" class="btn btn-primary">
+            <i class="fas fa-redo me-1"></i>Recuperar outra senha
+        </a>
+        <a href="?page=listarUsuario" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Voltar
         </a>
 
         <?php else: ?>
@@ -131,16 +109,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             <div class="mb-3">
                 <label for="text_usuario" class="form-label">Nome de Usuario</label>
                 <input type="text" name="text_usuario" id="text_usuario" class="form-control" required autofocus>
-                <div class="form-text">Informe seu nome de usuario para gerar uma nova senha temporaria.</div>
+                <div class="form-text">Informe o nome do usuario para gerar uma nova senha temporaria de 6 digitos numericos.</div>
             </div>
             <div class="d-grid gap-2">
-                <button type="submit" name="submit" class="btn login-btn text-white" style="background:#1f3c60;border:none;font-weight:500">
+                <button type="submit" name="submit" class="btn btn-primary">
                     <i class="fas fa-key me-1"></i>Gerar Nova Senha
                 </button>
-                <a href="?page=login" class="btn btn-outline-secondary">Voltar ao Login</a>
+                <a href="?page=listarUsuario" class="btn btn-outline-secondary">Voltar</a>
             </div>
         </form>
 
         <?php endif; ?>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

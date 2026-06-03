@@ -61,56 +61,8 @@
     return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
   }
 
-  // Sistema de mensagens melhorado
-  let _popupStyleSheet = null;
-
-  function _ensurePopupStyles() {
-    if (_popupStyleSheet) return;
-    _popupStyleSheet = document.createElement('style');
-    if (window._CSP_NONCE) _popupStyleSheet.setAttribute('nonce', window._CSP_NONCE);
-    _popupStyleSheet.textContent = `
-      .notif-overlay { position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); }
-      .notif-card { background:#fff; border-radius:16px; padding:32px 40px; min-width:320px; max-width:480px; text-align:center; box-shadow:0 16px 48px rgba(0,0,0,0.25); animation:notifFadeIn 0.25s ease; }
-      .notif-icon { font-size:48px; margin-bottom:16px; }
-      .notif-icon-success { color:#28a745; } .notif-icon-danger { color:#dc3545; } .notif-icon-warning { color:#ffc107; } .notif-icon-info { color:#17a2b8; }
-      .notif-text { font-size:16px; color:#333; line-height:1.5; }
-      @keyframes notifFadeIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
-    `;
-    document.head.appendChild(_popupStyleSheet);
-  }
-
   function showMessage(type, text, autoHide = true) {
-    _ensurePopupStyles();
-
-    const existing = document.getElementById('notificationPopup');
-    if (existing) existing.remove();
-
-    const icons = { success:'fa-check-circle', danger:'fa-exclamation-triangle', warning:'fa-exclamation-circle', info:'fa-info-circle' };
-    const icon = icons[type] || 'fa-info-circle';
-    const iconClass = 'notif-icon-' + (type || 'info');
-
-    const popup = document.createElement('div');
-    popup.id = 'notificationPopup';
-    popup.className = 'notif-overlay';
-    popup.addEventListener('click', (e) => {
-      if (e.target === popup) popup.remove();
-    });
-
-    const card = document.createElement('div');
-    card.className = 'notif-card';
-    card.innerHTML = `
-      <div class="notif-icon ${iconClass}"><i class="fas ${icon}"></i></div>
-      <div class="notif-text">${text}</div>
-    `;
-
-    popup.appendChild(card);
-    document.body.appendChild(popup);
-
-    if (autoHide) {
-      setTimeout(() => { popup.remove(); }, 3000);
-    }
-
-    return popup;
+    window.showToast(text, type);
   }
 
   const debouncedFetchDados = debounce(async () => {
@@ -809,10 +761,7 @@
   }
 
   function clearMessage() {
-    const el = document.getElementById('manutencaoMensagem');
-    if (!el) return;
-    el.innerHTML = '';
-    el.classList.add('is-hidden');
+    // no-op: toasts auto-hide
   }
 
   // Funções de renderização restantes (simplificadas)

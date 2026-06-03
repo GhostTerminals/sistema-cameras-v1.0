@@ -13,6 +13,9 @@ try {
     if (!isset($_SESSION['usuario'])) {
         ApiResponse::unauthorized();
     }
+    if (!userHasAccess('supervisor')) {
+        ApiResponse::forbidden('Perfil sem permissao para acessar este recurso.');
+    }
 
     $jsonInput = json_decode(file_get_contents('php://input'), true);
     $data = is_array($jsonInput) ? $jsonInput : [];

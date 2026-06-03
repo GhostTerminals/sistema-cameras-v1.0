@@ -30,7 +30,7 @@ $regiaoList = $regiaoOptions['status'] === 'success' ? array_map(fn($r) => (arra
             <h4 class="mb-0"><i class="fas fa-bell me-2"></i>Cadastro de Alarme</h4>
         </div>
         <div class="card-body">
-            <div id="messageContainer" class="is-hidden"></div>
+
             <form id="formCadastroAlarme" class="needs-validation" novalidate>
 
                 <div class="card alarme-section-card mb-3">

@@ -114,7 +114,7 @@ if (!in_array($page, $pages_permitidas, true)) {
 // Processamento de API
 if (str_starts_with($page, 'api/')) {
     $publicApiPages = [
-        'api/api_health',
+        'api/api_ping',
     ];
     if (!isset($_SESSION['usuario']) && !in_array($page, $publicApiPages, true)) {
         http_response_code(401);

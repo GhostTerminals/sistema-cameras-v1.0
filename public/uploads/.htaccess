@@ -1,11 +1,5 @@
-# Permitir acesso apenas a imagens e documentos
-<FilesMatch "\.(jpg|jpeg|png|gif|webp|bmp|pdf|doc|docx|xls|xlsx)$">
-    Require all granted
-</FilesMatch>
-
-# Bloquear execucao de scripts
-<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phar|pl|cgi|py|sh|asp|aspx|htaccess|htpasswd)$">
-    Require all denied
-</FilesMatch>
+# Bloquear acesso direto a todos os arquivos.
+# Os anexos sao servidos exclusivamente via api_servir_anexo (autenticado).
+Require all denied
 
 Options -Indexes

@@ -20,8 +20,8 @@ jobs:
         run: find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -exec php -l {} \;
       - name: Run PHP linter (PHPStan)
         run: |
-          composer install --no-dev 2>/dev/null || true
-          phpstan analyse src api inc --level=5 --no-progress || true
+          composer install --no-dev 2>/dev/null
+          phpstan analyse src api inc --level=5 --no-progress
 
   unit-tests:
     name: ✅ Unit & Integration Tests
@@ -108,7 +108,7 @@ jobs:
           sleep 3
       - name: Run health check
         run: |
-          curl -f http://127.0.0.1:8080/index.php?page=api/api_health 2>/dev/null || true
+          curl -f http://127.0.0.1:8080/index.php?page=api/api_ping 2>/dev/null
           echo "✅ Server smoke test completed"
 
   build-docker:

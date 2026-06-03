@@ -48,4 +48,4 @@ EXPOSE 80
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=15s \
-    CMD curl -f http://localhost/index.php?page=api/api_health || exit 1
+    CMD curl -f http://localhost/index.php?page=api/api_ping || exit 1

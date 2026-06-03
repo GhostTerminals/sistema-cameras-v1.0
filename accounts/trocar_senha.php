@@ -95,13 +95,13 @@ require_once __DIR__ . '/../inc/navbar.php';
                         <div class="mb-3">
                             <label for="nova_senha" class="form-label">Nova Senha</label>
                             <input type="password" class="form-control" id="nova_senha" name="nova_senha" 
-                                minlength="8" required>
-                            <div class="form-text">Mínimo de 8 caracteres, com maiúscula, minúscula, número e especial</div>
+                                minlength="6" required>
+                            <div class="form-text">Mínimo de 6 dígitos numéricos</div>
                         </div>
                         <div class="mb-3">
                             <label for="confirma_senha" class="form-label">Confirmar Nova Senha</label>
                             <input type="password" class="form-control" id="confirma_senha" name="confirma_senha" 
-                                minlength="8" required>
+                                minlength="6" required>
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" name="submit" class="btn btn-primary">

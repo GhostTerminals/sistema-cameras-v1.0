@@ -13,6 +13,9 @@ try {
     if (!isset($_SESSION['usuario'])) {
         ApiResponse::unauthorized();
     }
+    if (!userHasAccess('supervisor')) {
+        ApiResponse::forbidden('Perfil sem permissao para acessar este recurso.');
+    }
 
     $db = db();
 

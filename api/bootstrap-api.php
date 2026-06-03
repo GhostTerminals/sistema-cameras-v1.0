@@ -21,6 +21,56 @@ require_once API_ROOT . '/RequestValidator.php';
 require_once API_ROOT . '/ValidationSchema.php';
 require_once API_ROOT . '/RateLimiter.php';
 
+function requiredAccessForApiEndpoint(string $endpoint): string
+{
+    $adminEndpoints = [
+        'auditoria_cameras',
+        'limpar_sessoes_orfas',
+        'health',
+        'api_health',
+    ];
+
+    $supervisorEndpoints = [
+        'cadastrar_alarmes',
+        'cadastrar_cameras',
+        'editar_alarme',
+        'editar_camera',
+        'excluir_anexo',
+        'excluir_camera',
+        'manutencao_alarmes',
+        'manutencao_cameras',
+        'relatorios_cameras',
+        'upload_anexo',
+    ];
+
+    if (in_array($endpoint, $adminEndpoints, true)) {
+        return 'admin';
+    }
+
+    if (in_array($endpoint, $supervisorEndpoints, true)) {
+        return 'supervisor';
+    }
+
+    return 'user';
+}
+
+function requireApiAccessForEndpoint(string $endpoint): void
+{
+    configureSessionSecurity();
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['usuario'])) {
+        ApiResponse::unauthorized();
+    }
+
+    $requiredAccess = requiredAccessForApiEndpoint($endpoint);
+    if (!userHasAccess($requiredAccess)) {
+        ApiResponse::forbidden('Perfil sem permissao para acessar este recurso.');
+    }
+}
+
 function executeApiRequest(?string $endpointOverride = null): void
 {
     registerGlobalErrorHandlers('api');
@@ -104,8 +154,9 @@ function executeApiRequest(?string $endpointOverride = null): void
         ApiResponse::notFound('endpoint', $endpoint);
     }
 
-    $publicEndpoints = ['auth/login', 'auth/register', 'health', 'api_health'];
+    $publicEndpoints = ['auth/login', 'auth/register', 'ping', 'api_ping'];
     if (!in_array($endpoint, $publicEndpoints, true)) {
+        requireApiAccessForEndpoint($endpoint);
         requireApiCsrf();
     }
 

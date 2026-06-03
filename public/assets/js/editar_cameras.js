@@ -4,7 +4,6 @@ class EditarCamera {
         this.marcaSelect = document.getElementById("marcaSelect");
         this.toggleModeloExistente = document.getElementById("toggleModeloExistente");
         this.loadingOverlay = document.getElementById("loadingOverlay");
-        this.messageContainer = document.getElementById("messageContainer");
         this.btnSubmit = document.getElementById("btnSubmit");
         this.tipoSelect = this.form.querySelector('[name="tipo_id"]');
         
@@ -183,10 +182,7 @@ class EditarCamera {
                 
             } else {
                 select.innerHTML = '<option value="">Nenhum modelo encontrado</option>';
-                this.showMessage(
-                    "⚠️ Nenhum modelo cadastrado para esta marca. Use a opção 'novo modelo'.", 
-                    "warning"
-                );
+                window.showToast("Nenhum modelo cadastrado para esta marca. Use a opção 'novo modelo'.", "warning");
             }
             
         } catch (error) {
@@ -203,7 +199,7 @@ class EditarCamera {
 
         // Validar campos obrigatórios
         if (!this.validarCamposObrigatorios()) {
-            this.showMessage("⚠️ Por favor, preencha todos os campos obrigatórios.", "warning");
+            window.showToast("Por favor, preencha todos os campos obrigatórios.", "warning");
             return;
         }
 
@@ -282,20 +278,20 @@ class EditarCamera {
         if (this.toggleModeloExistente.checked) {
             const modeloSelect = document.getElementById("modeloExistenteSelect");
             if (!modeloSelect || !modeloSelect.value) {
-                this.showMessage("⚠️ Selecione um modelo existente.", "warning");
+                window.showToast("Selecione um modelo existente.", "warning");
                 modeloSelect?.focus();
                 return false;
             }
         } else {
             const novoModeloInput = this.form.querySelector('input[name="novo_modelo_nome"]');
             if (!novoModeloInput || !novoModeloInput.value.trim()) {
-                this.showMessage("⚠️ Informe o nome do novo modelo.", "warning");
+                window.showToast("Informe o nome do novo modelo.", "warning");
                 novoModeloInput?.focus();
                 return false;
             }
             
             if (novoModeloInput.value.trim().length < 2) {
-                this.showMessage("⚠️ O nome do modelo deve ter pelo menos 2 caracteres.", "warning");
+                window.showToast("O nome do modelo deve ter pelo menos 2 caracteres.", "warning");
                 novoModeloInput.focus();
                 return false;
             }
@@ -323,7 +319,7 @@ class EditarCamera {
 
 
             if (resultado.success === true) {
-                this.showPopup(resultado.data?.message || resultado.message);
+                window.showToast(resultado.data?.message || resultado.message, 'success');
                 
                 this.form.reset();
                 this.form.classList.remove("was-validated");
@@ -340,57 +336,14 @@ class EditarCamera {
                 }
                 
             } else {
-                this.showMessage(`❌ ${resultado.message || "Erro ao editar câmera"}`, "danger");
+                window.showToast(resultado.message || "Erro ao editar câmera", "danger");
             }
         } catch (error) {
-            console.error("❌ Erro de rede:", error);
-            this.showMessage("❌ Erro de conexão com o servidor.", "danger");
+            console.error("Erro de rede:", error);
+            window.showToast("Erro de conexão com o servidor.", "danger");
         } finally {
             this.showLoading(false);
         }
-    }
-
-    showPopup(message) {
-        var safe = String(message ?? '').replace(/[&<>"']/g, function (m) {
-            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-        });
-        var overlay = document.createElement('div');
-        overlay.className = 'camera-popup-overlay';
-        overlay.innerHTML =
-            '<div class="camera-popup-box">' +
-                '<div class="camera-popup-icon"><i class="fas fa-check-circle"></i></div>' +
-                '<p class="camera-popup-message">' + safe + '</p>' +
-            '</div>';
-        document.body.appendChild(overlay);
-        requestAnimationFrame(function () { overlay.classList.add('visivel'); });
-        setTimeout(function () {
-            overlay.classList.remove('visivel');
-            overlay.addEventListener('transitionend', function () { overlay.remove(); }, { once: true });
-        }, 3000);
-    }
-
-    showMessage(message, type = "info") {
-        if (!this.messageContainer) return;
-
-        const alertClass = {
-            success: "alert-success",
-            danger: "alert-danger",
-            warning: "alert-warning",
-            info: "alert-info",
-        }[type] || "alert-info";
-
-        this.messageContainer.innerHTML = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                type === 'danger' ? 'fa-exclamation-circle' : 
-                                type === 'warning' ? 'fa-exclamation-triangle' : 
-                                'fa-info-circle'} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-        
-        this.messageContainer.classList.remove("is-hidden");
     }
 
     showLoading(show) {

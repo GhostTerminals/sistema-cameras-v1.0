@@ -19,12 +19,13 @@
         type = type || 'success'
         var iconMap = { success: 'fa-check-circle text-success', danger: 'fa-exclamation-circle text-danger', warning: 'fa-exclamation-triangle text-warning', info: 'fa-info-circle text-info' }
         var icon = iconMap[type] || iconMap.info
-        var bgClass = type === 'success' ? 'border-success' : type === 'danger' ? 'border-danger' : type === 'warning' ? 'border-warning' : 'border-info'
+        var bgMap = { success: 'bg-success-subtle border-success', danger: 'bg-danger-subtle border-danger', warning: 'bg-warning-subtle border-warning', info: 'bg-info-subtle border-info' }
+        var bgClass = bgMap[type] || bgMap.info
 
         var container = ensureToastContainer()
         var id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5)
 
-        var html = '<div id="' + id + '" class="toast align-items-center text-bg-light border-2 ' + bgClass + '" role="alert" aria-live="assertive" aria-atomic="true">'
+        var html = '<div id="' + id + '" class="toast align-items-center border-2 ' + bgClass + '" role="alert" aria-live="assertive" aria-atomic="true">'
         html += '<div class="d-flex">'
         html += '<div class="toast-body"><i class="fas ' + icon + ' me-2"></i>' + escapeHtml(message) + '</div>'
         html += '<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>'

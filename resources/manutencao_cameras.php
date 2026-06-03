@@ -18,8 +18,6 @@ requererAcesso('supervisor');
         </div>
     </div>
 
-    <div id="manutencaoMensagem" class="mb-3 is-hidden"></div>
-
     <div class="card shadow-sm mb-3">
         <div class="card-header bg-warning-subtle">
             <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Nova Ordem de Serviço</h5>

@@ -76,7 +76,7 @@ try {
                         </div>
                     </div>
                     </div>
-                    <div id="messageContainer" class="is-hidden"></div>
+
 
                     <form id="formEditarCamera" novalidate>
                         <input type="hidden" name="id" id="camera_id">

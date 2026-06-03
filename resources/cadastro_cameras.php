@@ -64,7 +64,8 @@ unset($_SESSION['form_data']);
 
                 <div class="card-body p-4">
                     <!-- Mensagens de Feedback -->
-                    <div id="messageContainer" class="is-hidden"></div>
+
+
 
                     <!-- Formulário -->
                     <form id="formCadastroCamera" class="needs-validation" novalidate>

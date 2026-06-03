@@ -183,8 +183,8 @@ class ValidationSchema
             'nome' => 'required|string|max:100',
             'usuario' => 'required|string|max:50',
             'email' => 'required|email',
-            'senha' => 'required|string|min:8|max:50',
-            'confirmar_senha' => 'required|string|min:8|max:50',
+            'senha' => 'required|string|min:6|max:50',
+            'confirmar_senha' => 'required|string|min:6|max:50',
             'cpf' => 'cpf',
             'telefone' => 'string|max:20'
         ], [

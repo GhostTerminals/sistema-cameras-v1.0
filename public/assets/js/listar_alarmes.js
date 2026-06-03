@@ -315,28 +315,12 @@ function mostrarErro(mensagem) {
 }
 
 function showToast(message, type) {
-    type = type || 'info';
-    const toastContainer = document.querySelector('.toast-container');
-    if (!toastContainer) return;
-
-    const bgMap = { success: 'bg-success', danger: 'bg-danger', warning: 'bg-warning', info: 'bg-info' };
-    const bgClass = bgMap[type] || 'bg-info';
-
-    const toastEl = document.createElement('div');
-    toastEl.className = `toast align-items-center text-white ${bgClass} border-0`;
-    toastEl.setAttribute('role', 'alert');
-    toastEl.setAttribute('aria-live', 'assertive');
-    toastEl.setAttribute('aria-atomic', 'true');
-    toastEl.innerHTML = `
-        <div class="d-flex">
-            <div class="toast-body">${escapeHtml(message)}</div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    `;
-    toastContainer.appendChild(toastEl);
-    const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 4000 });
-    toast.show();
-    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+  var safe = String(message ?? '').replace(/[&<>"']/g, function(m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+  });
+  if (typeof window.showToast === 'function') {
+    window.showToast(safe, type);
+  }
 }
 
 let todosAlarmes = [];

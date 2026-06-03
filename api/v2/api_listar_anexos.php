@@ -88,7 +88,7 @@ try {
 
     $anexos = array_map(function ($row) use ($baseUrl) {
         $ar = (array)$row;
-        $ar['url'] = $baseUrl . '/' . $row->caminho;
+        $ar['url'] = $baseUrl . '/index.php?page=api/api_servir_anexo&id=' . $row->id;
         $ar['tamanho_formatado'] = formatFileSize((int)$row->tamanho);
         return $ar;
     }, $result['data'] ?? []);

@@ -62,19 +62,11 @@
   }
 
   function showMessage(type, text) {
-    const el = document.getElementById('manutencaoMensagem');
-    if (!el) return;
-    el.className = `alert alert-${type}`;
-    el.textContent = text;
-    el.classList.remove('is-hidden');
+    window.showToast(text, type);
   }
 
   function clearMessage() {
-    const el = document.getElementById('manutencaoMensagem');
-    if (!el) return;
-    el.classList.add('is-hidden');
-    el.textContent = '';
-    el.className = '';
+    // no-op: toasts auto-hide
   }
 
   function renderSelectOptions(selectId, data, includeEmptyLabel) {
@@ -454,7 +446,6 @@
         procedimentoSelect.classList.remove('auto-filled-highlight');
       }, 1400);
     }
-    clearMessage();
     document.querySelector('#formManutencaoCamera button[type="submit"]').textContent = 'Finalizar Ordem de Serviço';
   }
 
@@ -487,12 +478,12 @@
         throw new Error(result.error || 'Falha ao iniciar execução da OS.');
       }
 
-      showMessage('success', result.message || 'Ordem de serviço em execução.');
+      window.showToast(result.message || 'Ordem de serviço em execução.', 'success');
       state.cameraSelecionada = '';
       await fetchDados();
     } catch (error) {
       console.error(error);
-      showMessage('danger', error.message || 'Erro ao iniciar execução da OS.');
+      window.showToast(error.message || 'Erro ao iniciar execução da OS.', 'danger');
     }
   }
 

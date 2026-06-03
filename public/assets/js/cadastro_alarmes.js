@@ -6,13 +6,6 @@
     return window.APP_API_BASE || `${window.BASE_URL || '/'}index.php?page=api/`;
   }
 
-  function showMessage(type, text) {
-    const el = document.getElementById('messageContainer');
-    if (!el) return;
-    el.innerHTML = `<div class="alert alert-${type}" role="alert">${text}</div>`;
-    el.classList.remove('is-hidden');
-  }
-
   function formToPayload(form) {
     const data = {};
     const fd = new FormData(form);
@@ -49,26 +42,6 @@
     });
   }
 
-  function showPopup(message) {
-    const safe = String(message ?? '').replace(/[&<>"']/g, function(m) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-    });
-    const overlay = document.createElement('div');
-    overlay.className = 'alarme-popup-overlay';
-    overlay.innerHTML = `
-      <div class="alarme-popup-box">
-        <div class="alarme-popup-icon">&#10003;</div>
-        <p class="alarme-popup-message">${safe}</p>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-    requestAnimationFrame(() => overlay.classList.add('visivel'));
-    setTimeout(() => {
-      overlay.classList.remove('visivel');
-      overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
-    }, 3000);
-  }
-
   function resetForm() {
     const form = document.getElementById('formCadastroAlarme');
     if (!form) return;
@@ -98,7 +71,7 @@
 
     savedAlarmeId = null;
 
-    showPopup('Cadastro finalizado com sucesso!');
+    window.showToast('Cadastro finalizado com sucesso!', 'success');
   }
 
   async function handleSubmit(event) {
@@ -135,8 +108,7 @@
       savedAlarmeId = result.data?.resource?.alarme_id;
 
       var alarmMsg = result.data?.resource?.message || 'Alarme cadastrado com sucesso!';
-      showPopup(alarmMsg);
-      showMessage('success', alarmMsg + ' — Agora você pode anexar imagens se desejar.');
+      window.showToast(alarmMsg + ' — Agora você pode anexar imagens se desejar.', 'success');
 
       if (savedAlarmeId) {
         const anexosSection = document.getElementById('anexosSection');
@@ -159,7 +131,7 @@
         btnFinalizar.classList.remove('d-none');
       }
     } catch (error) {
-      showMessage('danger', error.message || 'Erro ao cadastrar alarme.');
+      window.showToast(error.message || 'Erro ao cadastrar alarme.', 'danger');
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-save me-1"></i>Salvar';
     }

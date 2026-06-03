@@ -9,6 +9,7 @@ return [
     'logout',
     'nao_autorizado',
     'trocar_senha',
+    'recuperar_senha',
 
     // MODULO: ADMIN (pasta /accounts)
     'administracao',
@@ -56,9 +57,11 @@ return [
     'api/api_geocode',
     'api/session_check',
     'api/renovar_sessao',
+    'api/api_ping',
     'api/api_health',
     'api/api_upload_anexo',
     'api/api_listar_anexos',
     'api/api_excluir_anexo',
+    'api/api_servir_anexo',
 
 ];

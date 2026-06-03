@@ -13,6 +13,9 @@ try {
     if (!isset($_SESSION['usuario'])) {
         ApiResponse::unauthorized();
     }
+    if (!userHasAccess('supervisor')) {
+        ApiResponse::forbidden('Perfil sem permissao para acessar este recurso.');
+    }
 
     $jsonInput = json_decode(file_get_contents('php://input'), true);
     $input = is_array($jsonInput) ? $jsonInput : [];
@@ -34,10 +37,29 @@ try {
     }
 
     $anexo = $result['data'][0];
+    $before = (array)$anexo;
 
-    $caminhoAbsoluto = __DIR__ . '/../../public/' . $anexo->caminho;
-    if (file_exists($caminhoAbsoluto)) {
-        @unlink($caminhoAbsoluto);
+    $uploadsBase = realpath(__DIR__ . '/../../public/uploads');
+    $relativePath = str_replace('\\', '/', ltrim((string)$anexo->caminho, '/'));
+
+    if ($uploadsBase === false || !str_starts_with($relativePath, 'uploads/')) {
+        error_log('[api_excluir_anexo] Caminho de anexo fora de uploads: ' . $relativePath);
+        ApiResponse::error('VALIDATION_ERROR', 'Caminho do anexo invalido.');
+    }
+
+    $caminhoAbsoluto = realpath(__DIR__ . '/../../public/' . $relativePath);
+    if ($caminhoAbsoluto !== false) {
+        $uploadsBasePrefix = rtrim(str_replace('\\', '/', $uploadsBase), '/') . '/';
+        $resolvedPath = str_replace('\\', '/', $caminhoAbsoluto);
+
+        if (!str_starts_with($resolvedPath, $uploadsBasePrefix)) {
+            error_log('[api_excluir_anexo] Tentativa de exclusao fora de uploads: ' . $resolvedPath);
+            ApiResponse::error('VALIDATION_ERROR', 'Caminho do anexo invalido.');
+        }
+
+        if (is_file($caminhoAbsoluto) && !unlink($caminhoAbsoluto)) {
+            ApiResponse::error('OPERATION_FAILED', 'Nao foi possivel excluir o arquivo do anexo.');
+        }
     }
 
     $db->query(
@@ -45,7 +67,6 @@ try {
         [':id' => $anexoId]
     );
 
-    $userId = currentUserId();
     if ($anexo->manutencao_camera_id) {
         $entityType = 'manutencao_camera';
         $entityId = $anexo->manutencao_camera_id;
@@ -59,7 +80,9 @@ try {
 
     try {
         if (function_exists('auditEvent')) {
-            auditEvent($userId, 'excluir_anexo', "Anexo #{$anexoId} excluído do {$entityType} #{$entityId}");
+            $before['entidade_relacionada'] = $entityType;
+            $before['entidade_relacionada_id'] = $entityId ? (int)$entityId : null;
+            auditEvent($db, 'equipamentos_anexos', $anexoId, 'DELETE', $before, null, 'api');
         }
     } catch (Throwable $e) {
         error_log('Erro ao registrar auditoria: ' . $e->getMessage());

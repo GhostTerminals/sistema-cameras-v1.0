@@ -66,3 +66,12 @@ composer validate passou novamente, mantendo apenas o aviso de licença ausente n
 vendor\bin\phpunit.bat --do-not-cache-result falhou no ambiente atual porque o PHP CLI tentou abrir sessão em C:\xampp\tmp e recebeu Permission denied. Reexecutando com session.save_path apontando para .tmp\sessions dentro do projeto, o PHPUnit passou: 24 testes, 65 assertions, 3 skipped. Os 3 skipped continuam sendo os testes de API sem servidor acessível.
 
 .gitignore foi atualizado para ignorar .tmp/, criada apenas como diretório local de sessão para a execução do PHPUnit.
+
+Confirmação com Git online
+Repositório reconhecido em C:\xampp\htdocs\sistema-cameras-v1.0, branch main. git status --short estava limpo antes desta atualização do resumo.md.
+
+.env não aparece em git ls-files e está corretamente ignorado por .gitignore.
+
+public/uploads possui arquivos versionados, incluindo imagens/PDFs reais e arquivos .htaccess. Isso confirma a pendência anterior: o ideal é manter apenas arquivos de controle necessários, como .htaccess/.gitkeep, e remover do índice os anexos gerados por usuário com cuidado para não apagar os arquivos locais.
+
+Último commit verificado: 49a95b5 first commit.

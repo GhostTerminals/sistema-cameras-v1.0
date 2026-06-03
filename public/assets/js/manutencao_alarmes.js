@@ -72,19 +72,11 @@
   }
 
   function showMessage(type, text) {
-    const el = document.getElementById('manutencaoMensagem');
-    if (!el) return;
-    el.className = `alert alert-${type}`;
-    el.textContent = text;
-    el.classList.remove('is-hidden');
+    window.showToast(text, type);
   }
 
   function clearMessage() {
-    const el = document.getElementById('manutencaoMensagem');
-    if (!el) return;
-    el.classList.add('is-hidden');
-    el.textContent = '';
-    el.className = '';
+    // no-op: toasts auto-hide
   }
 
   function renderSelectOptions(selectId, data, includeEmptyLabel) {

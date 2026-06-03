@@ -6,13 +6,6 @@
     return window.APP_API_BASE || `${window.BASE_URL || '/'}index.php?page=api/`;
   }
 
-  function showMessage(type, text) {
-    const el = document.getElementById('messageContainer');
-    if (!el) return;
-    el.innerHTML = `<div class="alert alert-${type}" role="alert">${text}</div>`;
-    el.classList.remove('is-hidden');
-  }
-
   function escapeHtml(value) {
     return String(value ?? '')
       .replace(/&/g, '&amp;')
@@ -129,7 +122,7 @@
 
     const id = document.getElementById('alarme_id')?.value;
     if (!id) {
-      showMessage('warning', 'Selecione um alarme para editar.');
+      window.showToast('Selecione um alarme para editar.', 'warning');
       return;
     }
 
@@ -159,9 +152,9 @@
       }
 
       formDirty = false;
-      showMessage('success', result.message || 'Alarme atualizado com sucesso.');
+      window.showToast(result.message || 'Alarme atualizado com sucesso.', 'success');
     } catch (error) {
-      showMessage('danger', error.message || 'Erro ao atualizar alarme.');
+      window.showToast(error.message || 'Erro ao atualizar alarme.', 'danger');
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalHtml;
@@ -192,7 +185,7 @@
         if (found) fillForm(found);
       }
     } catch (error) {
-      showMessage('danger', error.message || 'Falha ao carregar alarmes.');
+      window.showToast(error.message || 'Falha ao carregar alarmes.', 'danger');
     }
 
     select?.addEventListener('change', () => {
@@ -210,8 +203,14 @@
       const params = qs.toString() ? `&${qs.toString()}` : '';
       try {
         await loadAlarmes(params);
+        if (alarmes.length === 0) {
+          window.showToast('Nenhum alarme encontrado.', 'warning');
+        } else if (alarmes.length === 1) {
+          select.value = alarmes[0].id;
+          fillForm(alarmes[0]);
+        }
       } catch (error) {
-        showMessage('danger', error.message || 'Erro ao buscar alarmes.');
+        window.showToast(error.message || 'Erro ao buscar alarmes.', 'danger');
       }
     });
 

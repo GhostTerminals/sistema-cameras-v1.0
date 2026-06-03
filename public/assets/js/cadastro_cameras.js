@@ -4,7 +4,6 @@ class CadastroCamera {
         this.marcaSelect = document.getElementById("marcaSelect");
         this.toggleModeloExistente = document.getElementById("toggleModeloExistente");
         this.loadingOverlay = document.getElementById("loadingOverlay");
-        this.messageContainer = document.getElementById("messageContainer");
         this.btnSubmit = document.getElementById("btnSubmit");
         this.btnFinalizar = document.getElementById("btnFinalizar");
         this.btnBuscarCep = document.getElementById("btnBuscarCep");
@@ -269,16 +268,13 @@ class CadastroCamera {
                 
             } else {
                 select.innerHTML = '<option value="">Nenhum modelo encontrado</option>';
-                this.showMessage(
-                    "⚠️ Nenhum modelo cadastrado para esta marca. Use a opção 'novo modelo'.", 
-                    "warning"
-                );
+                window.showToast("Nenhum modelo cadastrado para esta marca. Use a opção 'novo modelo'.", "warning");
             }
             
         } catch (error) {
-            console.error("❌ Erro ao carregar modelos:", error);
+            console.error("Erro ao carregar modelos:", error);
             select.innerHTML = '<option value="">Erro ao carregar modelos</option>';
-            this.showMessage("❌ Erro ao carregar modelos. Verifique sua conexão.", "danger");
+            window.showToast("Erro ao carregar modelos. Verifique sua conexão.", "danger");
         }
     }
 
@@ -378,7 +374,7 @@ class CadastroCamera {
         const cep = (cepField.value || "").replace(/\D/g, "");
         if (cep.length !== 8) {
             if (!silent) {
-                this.showMessage("Informe um CEP valido com 8 digitos.", "warning");
+                window.showToast("Informe um CEP valido com 8 digitos.", "warning");
             }
             cepField.focus();
             return;
@@ -399,7 +395,7 @@ class CadastroCamera {
             const payload = await response.json();
             if (!payload.success) {
                 if (!silent) {
-                    this.showMessage(payload.error || "CEP nao encontrado.", "warning");
+                    window.showToast(payload.error || "CEP nao encontrado.", "warning");
                 }
                 return;
             }
@@ -438,12 +434,12 @@ class CadastroCamera {
             }
 
             if (!silent) {
-                this.showMessage("Rua e endereco preenchidos a partir do CEP.", "success");
+                window.showToast("Rua e endereco preenchidos a partir do CEP.", "success");
             }
         } catch (error) {
             console.error("Erro ao buscar CEP:", error);
             if (!silent) {
-                this.showMessage("Erro ao consultar CEP.", "danger");
+                window.showToast("Erro ao consultar CEP.", "danger");
             }
         } finally {
             this.showLoading(false);
@@ -453,8 +449,7 @@ class CadastroCamera {
     async buscarCoordenadasPorEndereco() {
 
         if (!window.APP_API_BASE) {
-            this.showMessage("Erro interno: base da API não definida.", "danger");
-            this.showMessage("Erro interno: base da API não definida.", "danger");
+            window.showToast("Erro interno: base da API não definida.", "danger");
             return;
         }
 
@@ -463,7 +458,7 @@ class CadastroCamera {
 
         const { query, camposMinimosOk } = enderecoData;
         if (!camposMinimosOk) {
-            this.showMessage("Para geolocalizar com precisão, preencha via, número, bairro, cidade e UF.", "warning");
+            window.showToast("Para geolocalizar com precisão, preencha via, número, bairro, cidade e UF.", "warning");
             return;
         }
 
@@ -483,7 +478,7 @@ class CadastroCamera {
 
 
             if (response.status === 401 || response.status === 403) {
-                this.showMessage("Sessão expirada ou acesso negado. Faça login novamente.", "danger");
+                window.showToast("Sessão expirada ou acesso negado. Faça login novamente.", "danger");
                 return;
             }
 
@@ -506,7 +501,7 @@ class CadastroCamera {
 
             if (!payload.success) {
 
-                this.showMessage(payload.data?.error || payload.error || "Endereço não encontrado para gerar coordenadas.", "warning");
+                window.showToast(payload.data?.error || payload.error || "Endereço não encontrado para gerar coordenadas.", "warning");
                 return;
             }
 
@@ -523,10 +518,10 @@ class CadastroCamera {
 
             }
 
-            this.showMessage("Coordenadas preenchidas automaticamente.", "success");
+            window.showToast("Coordenadas preenchidas automaticamente.", "success");
         } catch (error) {
             console.error("❌ Erro ao buscar coordenadas:", error);
-            this.showMessage("Erro ao buscar coordenadas automaticas.", "danger");
+            window.showToast("Erro ao buscar coordenadas automaticas.", "danger");
         } finally {
             this.showLoading(false);
         }
@@ -541,7 +536,7 @@ class CadastroCamera {
         // Validar todos os campos
         const allValid = this.validateAllFields();
         if (!allValid) {
-            this.showMessage("⚠️ Por favor, corrija os campos destacados em vermelho.", "warning");
+            window.showToast("Por favor, corrija os campos destacados em vermelho.", "warning");
             
             // Rolar até o primeiro erro
             const firstInvalid = this.form.querySelector('.is-invalid:not([type="hidden"])');
@@ -632,20 +627,20 @@ class CadastroCamera {
         if (this.toggleModeloExistente.checked) {
             const modeloSelect = document.getElementById("modeloExistenteSelect");
             if (!modeloSelect || !modeloSelect.value) {
-                this.showMessage("⚠️ Selecione um modelo existente.", "warning");
+                window.showToast("Selecione um modelo existente.", "warning");
                 modeloSelect?.focus();
                 return false;
             }
         } else {
             const novoModeloInput = this.form.querySelector('input[name="novo_modelo_nome"]');
             if (!novoModeloInput || !novoModeloInput.value.trim()) {
-                this.showMessage("⚠️ Informe o nome do novo modelo.", "warning");
+                window.showToast("Informe o nome do novo modelo.", "warning");
                 novoModeloInput?.focus();
                 return false;
             }
             
             if (novoModeloInput.value.trim().length < 2) {
-                this.showMessage("⚠️ O nome do modelo deve ter pelo menos 2 caracteres.", "warning");
+                window.showToast("O nome do modelo deve ter pelo menos 2 caracteres.", "warning");
                 novoModeloInput.focus();
                 return false;
             }
@@ -689,7 +684,7 @@ class CadastroCamera {
                     }
                 }
 
-                this.showMessage(`✅ ${resultado.data?.resource?.message || resultado.message || "Cadastrado"} — Agora você pode anexar imagens se desejar.`, "success");
+                window.showToast(`${resultado.data?.resource?.message || resultado.message || "Cadastrado"} — Agora você pode anexar imagens se desejar.`, "success");
 
                 this.btnSubmit.disabled = true;
                 this.btnSubmit.innerHTML = `
@@ -701,15 +696,15 @@ class CadastroCamera {
                 }
                 
             } else {
-                this.showMessage(`❌ ${resultado.message || "Erro ao cadastrar câmera"}`, "danger");
+                window.showToast(resultado.message || "Erro ao cadastrar câmera", "danger");
                 
                 if (resultado.data?.resource?.input) {
                     this.preencherFormulario(resultado.data.resource.input);
                 }
             }
         } catch (error) {
-            console.error("❌ Erro de rede:", error);
-            this.showMessage("❌ Erro de conexão com o servidor. Verifique sua rede.", "danger");
+            console.error("Erro de rede:", error);
+            window.showToast("Erro de conexão com o servidor. Verifique sua rede.", "danger");
         } finally {
             this.showLoading(false);
         }
@@ -745,7 +740,7 @@ class CadastroCamera {
 
         this.savedEquipmentId = null;
 
-        this.showPopup("Cadastro finalizado com sucesso!");
+        window.showToast("Cadastro finalizado com sucesso!", 'success');
 
         const firstField = this.form.querySelector('input:not([type="hidden"]), select');
         if (firstField) {
@@ -784,61 +779,6 @@ class CadastroCamera {
                     }
                 }, 500);
             }
-        }
-    }
-
-    showPopup(message) {
-        const safe = String(message ?? '').replace(/[&<>"']/g, function(m) {
-            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-        });
-        const overlay = document.createElement('div');
-        overlay.className = 'camera-popup-overlay';
-        overlay.innerHTML = `
-            <div class="camera-popup-box">
-                <div class="camera-popup-icon">&#10003;</div>
-                <p class="camera-popup-message">${safe}</p>
-            </div>
-        `;
-        document.body.appendChild(overlay);
-
-        requestAnimationFrame(() => overlay.classList.add('visivel'));
-
-        setTimeout(() => {
-            overlay.classList.remove('visivel');
-            overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
-        }, 3000);
-    }
-
-    showMessage(message, type = "info") {
-        if (!this.messageContainer) return;
-
-        const alertClass = {
-            success: "alert-success",
-            danger: "alert-danger",
-            warning: "alert-warning",
-            info: "alert-info",
-        }[type] || "alert-info";
-
-        const safeMessage = String(message ?? '').replace(/[&<>"']/g, function(m) {
-            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-        });
-        this.messageContainer.innerHTML = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                type === 'danger' ? 'fa-exclamation-circle' : 
-                                type === 'warning' ? 'fa-exclamation-triangle' : 
-                                'fa-info-circle'} me-2"></i>
-                ${safeMessage}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-        
-        this.messageContainer.classList.remove("is-hidden");
-
-        if (type !== 'success') {
-            setTimeout(() => {
-                this.messageContainer.classList.add("is-hidden");
-            }, 5000);
         }
     }
 

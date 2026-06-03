@@ -109,52 +109,6 @@ body.dark-mode #cameraSelector[size] option:hover {
     box-shadow: 0 0 0 0.18rem rgba(47, 125, 189, 0.18);
 }
 
-.camera-popup-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    pointer-events: none;
-}
-
-.camera-popup-overlay.visivel {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.camera-popup-box {
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    padding: 2rem 2.5rem;
-    text-align: center;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-    max-width: 420px;
-    width: 90%;
-    transform: scale(0.92);
-    transition: transform 0.25s ease;
-}
-
-.camera-popup-overlay.visivel .camera-popup-box {
-    transform: scale(1);
-}
-
-.camera-popup-icon {
-    font-size: 3rem;
-    color: #28a745;
-    margin-bottom: 0.75rem;
-}
-
-.camera-popup-message {
-    font-size: 1.05rem;
-    color: #333;
-    margin: 0;
-}
-
 body.dark-mode .editar-camera-wrapper .card {
     background: var(--bg-secondary);
     border-color: var(--border-color);
@@ -183,14 +137,6 @@ body.dark-mode .editar-camera-wrapper .alarme-section-header {
 body.dark-mode .editar-camera-wrapper .form-control,
 body.dark-mode .editar-camera-wrapper .form-select {
     border-color: var(--border-color);
-}
-
-body.dark-mode .camera-popup-box {
-    background: var(--bg-secondary);
-}
-
-body.dark-mode .camera-popup-message {
-    color: var(--text-primary);
 }
 
 @media (min-width: 1400px) {

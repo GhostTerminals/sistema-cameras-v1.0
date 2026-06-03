@@ -22,6 +22,11 @@ logs/
 .tmp/
 
 # Uploads (conteudo gerado pelo usuario)
+public/uploads/**
+!public/uploads/
+!public/uploads/**/
+!public/uploads/**/.gitkeep
+!public/uploads/**/.htaccess
 public/uploads/*.tmp
 public/uploads/temp/
 

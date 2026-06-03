@@ -96,7 +96,7 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('sync', event => {
   if (event.tag === 'sync-api') {
-    event.waitUntil(fetch(BASE_URL + '/index.php?page=api/api_health', { method: 'GET' }));
+    event.waitUntil(fetch(BASE_URL + '/index.php?page=api/api_ping', { method: 'GET' }));
   }
 });
 
