@@ -1,0 +1,19 @@
+.auditoria-page {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+.auditoria-page .card-box {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+}
+
+body.dark-mode .auditoria-page .card-box {
+    background: var(--bg-secondary);
+}
+
+.auditoria-page .badge-op {
+    font-size: 0.75rem;
+    letter-spacing: 0.3px;
+}

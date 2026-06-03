@@ -1,0 +1,64 @@
+<?php
+return [
+
+    // PAGINAS BASICAS
+    '404',
+    'home',
+    'login',
+    'login_submit',
+    'logout',
+    'nao_autorizado',
+    'trocar_senha',
+
+    // MODULO: ADMIN (pasta /accounts)
+    'administracao',
+    'cadastroUsuario',
+    'listarUsuario',
+    'editarUsuario',
+    'bloquearUsuario', 
+    'ativarUsuario',
+    'deletarUsuario',
+
+    // MODULO: SISTEMA DE CAMERAS (pasta /resources)
+    'cadastro_cameras',
+    'cadastro_alarmes',
+    'listar_cameras',
+    'listar_alarmes',
+    'editar_alarmes',
+    'relatorios_cameras',
+    'relatorios_alarmes',
+    'editar_cameras',
+    'controle_alarmes',
+    'controle_cameras',
+    'manutencao_cameras',
+    'manutencao_alarmes',
+    'auditoria_cameras',
+
+    // ENDPOINTS AJAX (pasta /api)
+    'api/api_cadastrar_cameras',
+    'api/api_cadastrar_alarmes',
+    'api/api_cameras',
+    'api/api_alarmes',
+    'api/api_relatorios_cameras',
+    'api/api_dashboard',
+    'api/api_editar_camera',
+    'api/api_editar_alarme',
+    'api/api_excluir_camera',
+    'api/api_get_modelos',
+    'api/api_modelos_cameras',
+    'api/api_modelos_alarmes',
+    'api/api_locais',
+    'api/api_status',
+    'api/api_auditoria_cameras',
+    'api/api_manutencao_cameras',
+    'api/api_manutencao_alarmes',
+    'api/api_cep_lookup',
+    'api/api_geocode',
+    'api/session_check',
+    'api/renovar_sessao',
+    'api/api_health',
+    'api/api_upload_anexo',
+    'api/api_listar_anexos',
+    'api/api_excluir_anexo',
+
+];

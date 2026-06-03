@@ -1,0 +1,93 @@
+.alarme-cadastro-page {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.alarme-section-card {
+    border: 1px solid #d5dce3;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.alarme-section-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.alarme-section-header {
+    background: #fff0f0;
+    border-bottom: 2px solid #dc3545;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.7rem 1rem;
+    color: #212529;
+}
+
+.alarme-section-header i {
+    color: #dc3545;
+    font-size: 1.1rem;
+    width: 1.4rem;
+    text-align: center;
+}
+
+.alarme-section-card .card-body {
+    padding: 1rem;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+}
+
+/* ===== POPUP ===== */
+.alarme-popup-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+
+.alarme-popup-overlay.visivel {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.alarme-popup-box {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    max-width: 420px;
+    width: 90%;
+    transform: scale(0.92);
+    transition: transform 0.25s ease;
+}
+
+.alarme-popup-overlay.visivel .alarme-popup-box {
+    transform: scale(1);
+}
+
+.alarme-popup-icon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 0.75rem;
+}
+
+.alarme-popup-message {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    margin: 0;
+}

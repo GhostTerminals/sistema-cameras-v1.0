@@ -1,0 +1,12 @@
+{
+  "name": "sistema-cameras",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.7"
+  }
+}

@@ -1,0 +1,23 @@
+Options -Indexes
+RewriteEngine On
+
+# Bloquear acesso a arquivos sensiveis
+<FilesMatch "\.(env|sql|md|log|yml|yaml|json|lock)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    # Bloquear acesso direto a pastas internas
+    RewriteRule ^(\.env|config/|inc/|src/|accounts/|auth/|api/|scripts/) - [F,L]
+</IfModule>
+
+# Se o arquivo existir, NÃO reescreve
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Se a pasta existir, NÃO reescreve
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Caso contrário, envia para index.php
+RewriteRule ^ index.php [QSA,L]

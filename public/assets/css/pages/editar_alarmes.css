@@ -1,0 +1,46 @@
+.editar-alarme-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.alarme-section-card {
+    border: 1px solid #d5dce3;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.alarme-section-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.alarme-section-header {
+    background: #f0f6fc;
+    border-bottom: 2px solid #0d6efd;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.7rem 1rem;
+    color: #212529;
+}
+
+.alarme-section-header i {
+    color: #0d6efd;
+    font-size: 1.1rem;
+    width: 1.4rem;
+    text-align: center;
+}
+
+.alarme-section-card .card-body {
+    padding: 1rem;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+}

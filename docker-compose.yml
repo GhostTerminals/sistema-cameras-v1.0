@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: cameras-app
+    ports:
+      - "80:80"
+    environment:
+      - CAMERAS_ENV=production
+      - DB_HOST=db
+      - DB_NAME=cftv_gml
+      - DB_USER=${DB_USER:-cftv_user}
+      - DB_PASS=${DB_PASS:?DB_PASS nao definido}
+      - APP_TIMEZONE=America/Sao_Paulo
+      - CAMERAS_SESSION_TIMEOUT=3600
+      - CAMERAS_SESSION_ABSOLUTE_TIMEOUT=28800
+      - CAMERAS_CSP_ALLOW_INLINE_STYLES=0
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/index.php?page=api/api_health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  db:
+    image: mysql:8.0
+    container_name: cameras-db
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./config/DB/cftv_gml.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS:?MYSQL_ROOT_PASS nao definido}
+      - MYSQL_DATABASE=cftv_gml
+      - MYSQL_USER=${DB_USER:-cftv_user}
+      - MYSQL_PASSWORD=${DB_PASS:?DB_PASS nao definido}
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --event-scheduler=ON
+
+volumes:
+  mysql_data:
+
+networks:
+  internal:
+    driver: bridge

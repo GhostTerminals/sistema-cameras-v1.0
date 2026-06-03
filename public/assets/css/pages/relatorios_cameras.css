@@ -1,0 +1,98 @@
+.relatorio-cameras-page {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+.relatorio-cameras-page .filtros-container,
+.relatorio-cameras-page .table-container {
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.relatorio-cameras-page .total-registros {
+    background-color: #e8f4fc;
+    border-left: 4px solid #3498db;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.relatorio-cameras-page .scrollbar-top-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    margin-bottom: 2px;
+    height: 16px;
+}
+
+.scrollbar-top-wrapper .scrollbar-top-inner {
+    height: 16px;
+    visibility: hidden;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar {
+    height: 16px;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 8px;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 8px;
+    border: 3px solid #e9ecef;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #8a929a;
+}
+
+.scrollbar-top-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #adb5bd #e9ecef;
+}
+
+.column-hidden {
+    display: none !important;
+}
+
+.relatorio-cameras-page .loading-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+body.dark-mode .relatorio-cameras-page .filtros-container,
+body.dark-mode .relatorio-cameras-page .table-container {
+    background-color: var(--bg-secondary);
+}
+
+body.dark-mode .relatorio-cameras-page .total-registros {
+    background-color: rgba(52, 152, 219, 0.15);
+}
+
+body.dark-mode .relatorio-cameras-page .loading-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+body.dark-mode .scrollbar-top-wrapper::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+body.dark-mode .scrollbar-top-wrapper::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-color: var(--bg-tertiary);
+}

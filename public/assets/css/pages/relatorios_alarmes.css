@@ -1,0 +1,90 @@
+.relatorio-alarmes-page {
+    max-width: 1240px;
+    margin: 0 auto;
+}
+
+.relatorio-alarmes-page .filtros-container,
+.relatorio-alarmes-page .table-container {
+    background-color: var(--bg-secondary);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.relatorio-alarmes-page .total-registros {
+    background-color: #fff3e0;
+    border-left: 4px solid #ff9800;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.relatorio-alarmes-page .scrollbar-top-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    margin-bottom: 2px;
+    height: 16px;
+}
+
+.scrollbar-top-wrapper .scrollbar-top-inner {
+    height: 16px;
+    visibility: hidden;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar {
+    height: 16px;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 8px;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 8px;
+    border: 3px solid #e9ecef;
+}
+
+.scrollbar-top-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #8a929a;
+}
+
+/* Firefox scrollbar */
+.scrollbar-top-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: #adb5bd #e9ecef;
+}
+
+.column-hidden {
+    display: none !important;
+}
+
+.relatorio-alarmes-page .loading-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+body.dark-mode .relatorio-alarmes-page .filtros-container,
+body.dark-mode .relatorio-alarmes-page .table-container {
+    background-color: var(--bg-secondary);
+}
+
+body.dark-mode .relatorio-alarmes-page .total-registros {
+    background-color: rgba(255, 152, 0, 0.15);
+}
+
+body.dark-mode .relatorio-alarmes-page .loading-overlay {
+    background: rgba(0, 0, 0, 0.85);
+}

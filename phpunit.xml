@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         failOnWarning="true"
+         failOnRisky="true"
+         beStrictAboutTestsThatDoNotTestAnything="false">
+  <testsuites>
+    <testsuite name="All Tests">
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+      <directory suffix=".php">api</directory>
+      <directory suffix=".php">inc</directory>
+    </include>
+    <exclude>
+      <directory suffix="Test.php">tests</directory>
+      <directory>vendor</directory>
+      <directory>node_modules</directory>
+    </exclude>
+  </source>
+
+  <php>
+    <env name="CAMERAS_ENV" value="testing"/>
+    <env name="APP_TIMEZONE" value="America/Sao_Paulo"/>
+    <ini name="display_errors" value="1"/>
+    <ini name="error_reporting" value="-1"/>
+  </php>
+</phpunit>

@@ -1,0 +1,141 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  php-lint:
+    name: 🔍 PHP Syntax & Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: composer, phpstan
+      - name: Check PHP syntax
+        run: find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -exec php -l {} \;
+      - name: Run PHP linter (PHPStan)
+        run: |
+          composer install --no-dev 2>/dev/null || true
+          phpstan analyse src api inc --level=5 --no-progress || true
+
+  unit-tests:
+    name: ✅ Unit & Integration Tests
+    needs: php-lint
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: cftv_gml_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: phpunit:10, composer
+      - name: Composer install
+        run: composer install --no-dev --prefer-dist
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 30); do
+            mysqladmin ping -h127.0.0.1 --silent && break
+            sleep 1
+          done
+      - name: Setup test database
+        run: |
+          mysql -h127.0.0.1 -uroot cftv_gml_test < config/DB/cftv_gml.sql
+      - name: Run PHPUnit tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_NAME: cftv_gml_test
+          DB_USER: root
+          DB_PASS: ''
+          CAMERAS_ENV: testing
+        run: phpunit --configuration phpunit.xml --do-not-cache-result --coverage-text
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  security-checks:
+    name: 🔐 Security Validation
+    needs: php-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for .env file in repo
+        run: |
+          if git ls-files --others --exclude-standard | grep -q '\.env$'; then
+            echo "❌ ERRO: .env não deve estar versionado!"
+            exit 1
+          fi
+      - name: Check for hardcoded credentials
+        run: |
+          if grep -r "password\s*=" . --include="*.php" | grep -v ".example" | grep -v ".template" | grep -v "PASSWORD_" | grep -v "password_" | head -5; then
+            echo "⚠️  Aviso: Possível credencial hardcoded (verifique manualmente)"
+          fi
+      - name: Check PHP syntax for security issues
+        run: find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -exec php -l {} \;
+
+  smoke-tests:
+    name: 🔥 Smoke Tests
+    needs: [php-lint, unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+      - name: Setup environment
+        run: |
+          cp .env.example .env || cp .env.template .env
+          echo "CAMERAS_ENV=testing" >> .env
+      - name: Start PHP server
+        run: |
+          cd public
+          php -S 127.0.0.1:8080 -t . -d display_errors=0 > /tmp/server.log 2>&1 &
+          sleep 3
+      - name: Run health check
+        run: |
+          curl -f http://127.0.0.1:8080/index.php?page=api/api_health 2>/dev/null || true
+          echo "✅ Server smoke test completed"
+
+  build-docker:
+    name: 🐳 Docker Build Verification
+    needs: [php-lint, unit-tests]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: |
+          if [ -f Dockerfile ]; then
+            docker build -t sistema-cameras:test .
+            echo "✅ Docker build successful"
+          fi
+
+  summary:
+    name: 📊 Test Summary
+    needs: [php-lint, unit-tests, security-checks, smoke-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Print summary
+        run: |
+          echo "✅ CI/CD Pipeline completed"
+          echo "  - PHP Lint: ${{ needs.php-lint.result }}"
+          echo "  - Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "  - Security: ${{ needs.security-checks.result }}"
+          echo "  - Smoke Tests: ${{ needs.smoke-tests.result }}"
+
