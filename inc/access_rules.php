@@ -23,7 +23,6 @@ return [
     'manutencao_cameras' => 'supervisor',
     'manutencao_alarmes' => 'supervisor',
     'controle_alarmes' => 'supervisor',
-    'controle_alarme' => 'supervisor',
     'listar_alarmes' => 'supervisor',
     'listar_cameras' => 'supervisor',
 ];

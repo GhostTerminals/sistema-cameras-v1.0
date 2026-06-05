@@ -245,10 +245,10 @@ class AccessibilityHelper {
 // Inicializar quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
   // Theme Manager
-  window.themeManager = new ThemeManager();
+  new ThemeManager();
 
-  // Skeleton Loader
-  window.skeletonLoader = new SkeletonLoader();
+  // Skeleton Loader (instância mantida para side effects, se necessário)
+  new SkeletonLoader();
 
   // Accessibility
   AccessibilityHelper.init();

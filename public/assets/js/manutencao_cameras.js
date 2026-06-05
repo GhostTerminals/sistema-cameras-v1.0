@@ -596,7 +596,6 @@
       throw new Error(payload.error || 'Falha ao carregar dados de manutenção.');
     }
     const data = payload.data || {};
-    console.log('fetchDados payload:', { success: payload.success, historicoCount: data.historico?.length, historicoIds: data.historico?.map(h => h.id), pendingIds: data.pending_orders?.map(p => p.id) });
     if (Array.isArray(data.cameras)) {
       renderCameras(data.cameras);
     }

@@ -5,11 +5,6 @@
             Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
             <span class="developer-name">Beta +</span>
         </span>
-        <!-- <span class="text-muted">
-            Sistema de Gerenciamento de Cameras e Alarmes &copy; <?php echo date('Y'); ?> -
-            <img src="<?= rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/\\') ?>/imagens/logo.png" alt="eMac Software"
-                class="footer-logo" loading="lazy" height="56">
-        </span> -->
     </div>
 </footer>
 
@@ -299,37 +294,23 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Modal de confirmacao de acao -->
-<div class="modal fade" id="modalConfirmacaoAcao" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Confirmacao</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Modal de confirmacao de cadastro (sucesso) -->
+<div class="modal fade" id="modalSucessoCadastro" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0">
+      <div class="modal-body text-center py-5">
+        <div class="mb-4">
+          <span class="success-icon">
+            <i class="fas fa-check-circle fa-4x text-success"></i>
+          </span>
+        </div>
+        <h5 class="fw-bold mb-2" id="sucessoModalTitle">Cadastro Realizado!</h5>
+        <p class="text-muted mb-0" id="sucessoModalMessage">O registro foi concluído com sucesso.</p>
       </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" id="btnCancelarAcao" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btnConfirmarAcao">Confirmar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de prompt de observacao -->
-<div class="modal fade" id="modalPromptAcao" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Observacao</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <input type="text" class="form-control modal-prompt-input" placeholder="Digite as observacoes...">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btnConfirmarPrompt">Confirmar</button>
+      <div class="modal-footer justify-content-center border-0 pt-0 pb-4">
+        <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">
+          <i class="fas fa-check me-2"></i>OK
+        </button>
       </div>
     </div>
   </div>

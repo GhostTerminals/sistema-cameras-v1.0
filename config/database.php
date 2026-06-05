@@ -36,11 +36,6 @@ class database
         return self::$instance;
     }
 
-    public static function resetInstance(): void
-    {
-        self::$instance = null;
-    }
-
     public function getConnection(): \PDO
     {
         return $this->pdo;

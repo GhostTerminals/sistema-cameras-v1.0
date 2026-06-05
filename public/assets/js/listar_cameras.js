@@ -14,14 +14,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function escapeJsString(value) {
-    return String(value)
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'")
-        .replace(/\r/g, '\\r')
-        .replace(/\n/g, '\\n');
-}
-
 function getFiltros() {
     const status = document.getElementById('filtroStatus').value;
     const local = document.getElementById('filtroLocal').value;
@@ -483,12 +475,6 @@ function initListarCameras() {
 
 initListarCameras();
 
-window.listarCameras = {
-  carregarListaCameras,
-  aplicarFiltros,
-  limparFiltros,
-  excluirCamera,
-  mostrarDetalhesCamera
-};
+
 
 })();

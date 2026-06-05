@@ -13,14 +13,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function escapeJsString(value) {
-    return String(value)
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'")
-        .replace(/\r/g, '\\r')
-        .replace(/\n/g, '\\n');
-}
-
 function getFiltros() {
     const status = document.getElementById('filtroStatus').value;
     const regiao = document.getElementById('filtroRegiao').value.trim();
@@ -408,11 +400,6 @@ function initListarAlarmes() {
 
 initListarAlarmes();
 
-window.listarAlarmes = {
-  carregarListaAlarmes,
-  aplicarFiltros,
-  limparFiltros,
-  mostrarDetalhesAlarme
-};
+
 
 })();

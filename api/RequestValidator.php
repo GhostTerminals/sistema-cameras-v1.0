@@ -428,14 +428,6 @@ class RequestValidator
     }
 
     /**
-     * Registra validador customizado
-     */
-    public function addCustomValidator(string $name, callable $callback): void
-    {
-        $this->customValidators[$name] = $callback;
-    }
-
-    /**
      * Verifica se tem erros
      */
     public function fails(): bool
@@ -457,14 +449,6 @@ class RequestValidator
     public function errors(): array
     {
         return $this->errors;
-    }
-
-    /**
-     * Obtém erro de um campo
-     */
-    public function getFieldErrors(string $field): array
-    {
-        return $this->errors[$field] ?? [];
     }
 
     /**
@@ -521,40 +505,4 @@ class RequestValidator
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    /**
-     * Obtém dados validados
-     */
-    public function validated(): array
-    {
-        if ($this->fails()) {
-            return [];
-        }
-        return $this->data;
-    }
-
-    /**
-     * Obtém apenas campos especificados
-     */
-    public function only(array $fields): array
-    {
-        $result = [];
-        foreach ($fields as $field) {
-            if (isset($this->data[$field])) {
-                $result[$field] = $this->data[$field];
-            }
-        }
-        return $result;
-    }
-
-    /**
-     * Obtém todos exceto campos especificados
-     */
-    public function except(array $fields): array
-    {
-        $result = $this->data;
-        foreach ($fields as $field) {
-            unset($result[$field]);
-        }
-        return $result;
-    }
 }

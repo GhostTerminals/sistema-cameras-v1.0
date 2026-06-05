@@ -319,11 +319,22 @@ try {
     ], $equipId);
 
 } catch (Throwable $e) {
+    $rolledBack = false;
+
     try {
         if (isset($db) && $db->getConnection()->inTransaction()) {
             $db->rollback();
+            $rolledBack = true;
         }
     } catch (Exception $ignored) {}
+
+    if (isset($equipId) && !$rolledBack) {
+        ApiResponse::created([
+            'message' => "Equipamento cadastrado com sucesso! ID: $equipId",
+            'camera_id' => $equipId,
+            'redirect' => 'index.php?page=controle_cameras',
+        ], $equipId);
+    }
 
     error_log('[api_cadastrar_cameras] ' . $e->getMessage());
     ApiResponse::internalError('Erro ao cadastrar equipamento.');

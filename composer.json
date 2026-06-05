@@ -17,8 +17,7 @@
             "config/database.php",
             "inc/security.php",
             "inc/single_session.php",
-            "src/ErrorHandler.php",
-            "src/Exceptions.php"
+            "src/ErrorHandler.php"
         ]
     },
     "scripts": {

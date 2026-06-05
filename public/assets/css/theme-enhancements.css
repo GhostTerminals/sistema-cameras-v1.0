@@ -213,7 +213,6 @@ label.required::after {
   content: " *";
   color: #e74c3c;
   font-weight: bold;
-  aria-label: "obrigatório";
 }
 
 /* Skip to content link (acessibilidade) */

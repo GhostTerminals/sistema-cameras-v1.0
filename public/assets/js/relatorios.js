@@ -341,11 +341,6 @@ $(document).ready(function () {
     window.showToast(mensagem, 'success');
   }
 
-  // Função para carregar filtros salvos
-  function carregarFiltrosSalvos() {
-    buscarDados();
-  }
-
   // ---- Seletor de colunas ----
   function setupColumnSelector() {
     const menu = document.getElementById('menuColunas');
@@ -541,12 +536,7 @@ $(document).ready(function () {
   // Iniciar aplicação
   inicializar();
 
-  // Expor funções para debug (opcional)
-  window.relatorioCameras = {
-    buscarDados,
-    limparFiltros,
-    exportarDados
-  };
+
 });
 
 

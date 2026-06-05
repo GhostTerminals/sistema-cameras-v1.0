@@ -18,7 +18,6 @@ require_once APP_ROOT . '/inc/single_session.php';
 require_once APP_ROOT . '/src/ErrorHandler.php';
 require_once API_ROOT . '/ApiResponse.php';
 require_once API_ROOT . '/RequestValidator.php';
-require_once API_ROOT . '/ValidationSchema.php';
 require_once API_ROOT . '/RateLimiter.php';
 
 function requiredAccessForApiEndpoint(string $endpoint): string

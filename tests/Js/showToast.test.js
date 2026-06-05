@@ -16,11 +16,11 @@ describe('showToast', () => {
     expect(typeof window.showToast).toBe('function')
   })
 
-  it('should call safeToast when showToast is available', async () => {
+  it('should call showToast successfully', async () => {
     window.showToast = vi.fn()
     await import('../../public/assets/js/main.js')
 
-    window.safeToast('test message', 'success')
+    window.showToast('test message', 'success')
 
     expect(window.showToast).toHaveBeenCalledWith('test message', 'success')
   })

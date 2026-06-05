@@ -729,9 +729,7 @@
       document.getElementById('btnFinalizarManutencao')?.classList.remove('d-none');
       state.alarmeSelecionada = '';
       state.historicoPage = 1;
-      console.warn('[FINALIZE] page:', state.historicoPage);
       await fetchDados();
-      console.warn('[FINALIZE] fetchDados concluido');
     } catch (error) {
       errorHandler.handle(error, 'Failed to save maintenance', 'error');
       showMessage('danger', error.message || 'Erro ao salvar manutenção.');

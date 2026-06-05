@@ -23,9 +23,6 @@ if (!defined('CSP_ALLOW_INLINE_STYLES')) {
         define('CSP_ALLOW_INLINE_STYLES', (int) appEnv('CAMERAS_CSP_ALLOW_INLINE_STYLES', '0'));
     }
 }
-if (!defined('APP_NAME')) {
-    define('APP_NAME', appEnv('CAMERAS_APP_NAME', 'Sistema de Cameras e Alarmes'));
-}
 if (!defined('ENVIRONMENT')) {
     define('ENVIRONMENT', appEnv('CAMERAS_ENV', 'development'));
 }

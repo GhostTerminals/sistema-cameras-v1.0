@@ -71,7 +71,7 @@
 
     savedAlarmeId = null;
 
-    window.showToast('Cadastro finalizado com sucesso!', 'success');
+    window.showSuccessModal('Cadastro Finalizado!', 'O cadastro do alarme foi concluído com sucesso.');
   }
 
   async function handleSubmit(event) {
@@ -108,7 +108,8 @@
       savedAlarmeId = result.data?.resource?.alarme_id;
 
       var alarmMsg = result.data?.resource?.message || 'Alarme cadastrado com sucesso!';
-      window.showToast(alarmMsg + ' — Agora você pode anexar imagens se desejar.', 'success');
+      window.showSuccessModal('Cadastro Realizado!', alarmMsg);
+      window.showToast('Agora você pode anexar imagens se desejar.', 'success');
 
       if (savedAlarmeId) {
         const anexosSection = document.getElementById('anexosSection');

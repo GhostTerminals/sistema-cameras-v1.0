@@ -141,25 +141,6 @@ class ApiResponse
     }
 
     /**
-     * Envia resposta com liste (não paginada)
-     */
-    public static function list(array $items, string $code = 'SUCCESS'): void
-    {
-        $response = [
-            'success' => true,
-            'code' => $code,
-            'message' => self::getMessageForCode($code),
-            'data' => $items,
-            'meta' => [
-                ...self::getMeta(),
-                'count' => count($items)
-            ]
-        ];
-
-        self::send($response, 200);
-    }
-
-    /**
      * Envia resposta de criação (201)
      */
     public static function created($resource, $id = null): void
@@ -253,22 +234,6 @@ class ApiResponse
         ];
 
         self::send($response, 429);
-    }
-
-    /**
-     * Envia resposta de conflito (409)
-     */
-    public static function conflict(?string $message = null): void
-    {
-        $response = [
-            'success' => false,
-            'code' => 'CONFLICT',
-            'message' => $message ?? 'Conflito ao processar requisição',
-            'data' => [],
-            'meta' => self::getMeta()
-        ];
-
-        self::send($response, 409);
     }
 
     /**

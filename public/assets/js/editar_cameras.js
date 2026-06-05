@@ -369,7 +369,7 @@ class EditarCamera {
 // Inicializar quando DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
 
-    window.editarCamera = new EditarCamera();
+    new EditarCamera();
 });
 
 document.addEventListener('DOMContentLoaded', async () => {

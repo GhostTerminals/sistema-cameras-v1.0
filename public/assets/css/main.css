@@ -485,6 +485,26 @@ a:hover {
   padding: 20px;
 }
 
+/* ===== SUCCESS MODAL ===== */
+.success-icon {
+  display: inline-block;
+  animation: successPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes successPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* ===== TOASTS ===== */
 .toast-container {
   z-index: 9999;

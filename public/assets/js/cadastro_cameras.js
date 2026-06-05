@@ -684,7 +684,12 @@ class CadastroCamera {
                     }
                 }
 
-                window.showToast(`${resultado.data?.resource?.message || resultado.message || "Cadastrado"} — Agora você pode anexar imagens se desejar.`, "success");
+                if (typeof window.showSuccessModal === 'function') {
+                    window.showSuccessModal('Cadastro Realizado!', resultado.data?.resource?.message || 'Câmera cadastrada com sucesso.');
+                } else {
+                    window.showToast(resultado.data?.resource?.message || 'Câmera cadastrada com sucesso!', 'success');
+                }
+                window.showToast(`Agora você pode anexar imagens se desejar.`, "success");
 
                 this.btnSubmit.disabled = true;
                 this.btnSubmit.innerHTML = `
@@ -740,7 +745,7 @@ class CadastroCamera {
 
         this.savedEquipmentId = null;
 
-        window.showToast("Cadastro finalizado com sucesso!", 'success');
+        window.showSuccessModal('Cadastro Finalizado!', 'O cadastro da câmera foi concluído com sucesso.');
 
         const firstField = this.form.querySelector('input:not([type="hidden"]), select');
         if (firstField) {
@@ -813,13 +818,8 @@ class CadastroCamera {
 // Inicializar quando DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
 
-    window.cadastroCamera = new CadastroCamera();
+    new CadastroCamera();
 });
-
-// Expor para debug
-if (typeof window !== 'undefined') {
-    window.CadastroCamera = CadastroCamera;
-}
 
 document.addEventListener('DOMContentLoaded', function () {
     const chk = document.getElementById('temAlarme');

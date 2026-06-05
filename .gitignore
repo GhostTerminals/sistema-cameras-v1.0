@@ -12,6 +12,7 @@ Thumbs.db
 
 # PHP
 vendor/
+.phpunit.cache/
 
 # Node
 node_modules/
@@ -33,7 +34,8 @@ public/uploads/temp/
 # Database dumps
 *.sql
 !config/DB/cftv_gml.sql
-!config/DB/seed_dev.sql
+!config/DB/private/seed_dev.sql
+!config/DB/migrations/*.sql
 
 # Nginx certificates (auto-assinados, gerados localmente)
 nginx/certs/

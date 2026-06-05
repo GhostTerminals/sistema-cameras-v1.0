@@ -112,7 +112,6 @@ $(document).ready(function () {
         renderizarTabela(dadosAtuais);
         renderizarPaginacao();
 
-        sessionStorage.setItem('filtrosAlarmes', JSON.stringify(filtros));
       } else {
         throw new Error(data.error || 'Erro desconhecido');
       }
@@ -261,7 +260,6 @@ $(document).ready(function () {
 
   function limparFiltros() {
     formFiltros[0].reset();
-    sessionStorage.removeItem('filtrosAlarmes');
     buscarDados();
   }
 
@@ -319,21 +317,8 @@ $(document).ready(function () {
     window.showToast(mensagem, 'success');
   }
 
+  // Função vazia intencional (placeholder)
   function carregarFiltrosSalvos() {
-    const filtrosSalvos = sessionStorage.getItem('filtrosAlarmes');
-
-    if (filtrosSalvos) {
-      try {
-        const filtros = JSON.parse(filtrosSalvos);
-
-        $('#conta').val(filtros.conta || '');
-        $('#status').val(filtros.status || '');
-        $('#regiao').val(filtros.regiao || '');
-
-        setTimeout(() => buscarDados(), 200);
-      } catch (error) {
-        console.error('Erro ao carregar filtros salvos:', error);
-      }
     }
   }
 
@@ -519,10 +504,6 @@ $(document).ready(function () {
 
   inicializar();
 
-  window.relatorioAlarmes = {
-    buscarDados,
-    limparFiltros,
-    exportarDados
-  };
+
 });
 

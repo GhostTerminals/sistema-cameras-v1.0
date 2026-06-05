@@ -12,7 +12,6 @@ define('ACCESS_LEVEL_ADMIN', 3);
 
 define('CSRF_TOKEN_BYTES', 32);
 define('PASSWORD_MIN_LENGTH', 6);
-define('TEMP_PASSWORD_LENGTH', 6);
 
 function getCsrfToken(): string
 {

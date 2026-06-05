@@ -72,9 +72,7 @@ if (function_exists('mb_http_output')) {
 setlocale(LC_ALL, 'pt_BR.UTF-8', 'pt_BR.utf8', 'pt_BR', 'Portuguese_Brazil.1252');
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'America/Sao_Paulo');
 
-if (!defined('APP_LOCALE')) {
-    define('APP_LOCALE', 'pt-BR');
-}
+
 if (!defined('ENVIRONMENT')) {
     define('ENVIRONMENT', getenv('CAMERAS_ENV') ?: 'development');
 }
