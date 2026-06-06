@@ -16,9 +16,10 @@ require_once APP_ROOT . '/config/database.php';
 require_once APP_ROOT . '/inc/security.php';
 require_once APP_ROOT . '/inc/single_session.php';
 require_once APP_ROOT . '/src/ErrorHandler.php';
-require_once API_ROOT . '/ApiResponse.php';
-require_once API_ROOT . '/RequestValidator.php';
-require_once API_ROOT . '/RateLimiter.php';
+require_once APP_ROOT . '/src/Api/ApiResponse.php';
+require_once APP_ROOT . '/src/Api/RequestValidator.php';
+require_once APP_ROOT . '/src/Api/RateLimiter.php';
+require_once APP_ROOT . '/src/Services/EquipamentoService.php';
 
 function requiredAccessForApiEndpoint(string $endpoint): string
 {

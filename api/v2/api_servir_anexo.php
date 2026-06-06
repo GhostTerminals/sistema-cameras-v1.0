@@ -53,7 +53,8 @@ try {
 
     header_remove('Content-Type');
     header('Content-Type: ' . $mimeType);
-    header('Content-Disposition: inline; filename="' . addslashes($nomeOriginal) . '"');
+    $filenameSanitized = preg_replace('/[\x00-\x1F\x7F<>"\/\\\\|:?*]/', '', $nomeOriginal);
+    header('Content-Disposition: inline; filename="' . $filenameSanitized . '"');
     header('Content-Length: ' . $tamanho);
     header('Cache-Control: private, max-age=3600');
     header('X-Content-Type-Options: nosniff');

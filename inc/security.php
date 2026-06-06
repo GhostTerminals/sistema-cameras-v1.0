@@ -12,6 +12,9 @@ define('ACCESS_LEVEL_ADMIN', 3);
 
 define('CSRF_TOKEN_BYTES', 32);
 define('PASSWORD_MIN_LENGTH', 6);
+define('LOGIN_MAX_ATTEMPTS', 5);
+define('LOGIN_WINDOW_SECONDS', 900);
+define('LOGIN_LOCK_SECONDS', 900);
 
 function getCsrfToken(): string
 {
@@ -28,7 +31,23 @@ function validateCsrfToken(?string $token): bool
         return false;
     }
 
-    return hash_equals($_SESSION['csrf_token'], $token);
+    if (hash_equals($_SESSION['csrf_token'], $token)) {
+        return true;
+    }
+
+    if (!empty($_SESSION['csrf_token_old']) && hash_equals($_SESSION['csrf_token_old'], $token)) {
+        return true;
+    }
+
+    return false;
+}
+
+function rotateCsrfToken(): void
+{
+    if (!empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token_old'] = $_SESSION['csrf_token'];
+    }
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(CSRF_TOKEN_BYTES));
 }
 
 function requireApiCsrf(): void
@@ -55,6 +74,8 @@ function requireApiCsrf(): void
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
+
+    rotateCsrfToken();
 }
 
 function currentUserId(): ?int

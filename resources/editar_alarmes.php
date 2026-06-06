@@ -10,7 +10,7 @@ $regiaoOptions = $db->query("SELECT id, nome FROM regioes ORDER BY nome ASC");
 $regiaoList = $regiaoOptions['status'] === 'success' ? array_map(fn($r) => (array)$r, $regiaoOptions['data']) : [];
 ?>
 
-<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/editar_alarmes.css?v=<?= @filemtime(__DIR__ . '/../public/assets/css/pages/editar_alarmes.css') ?>">
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/editar_alarmes.css?v=<?= filemtime(__DIR__ . '/../public/assets/css/pages/editar_alarmes.css') ?>">
 
 <div class="container mt-4 mb-4">
     <div class="editar-alarme-wrapper">
@@ -242,7 +242,7 @@ $regiaoList = $regiaoOptions['status'] === 'success' ? array_map(fn($r) => (arra
     </div>
 </div>
 
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/uppercase.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/uppercase.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui-utils.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/file-upload.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/editar_alarmes.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/editar_alarmes.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/uppercase.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/uppercase.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui-utils.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/file-upload.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/editar_alarmes.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/editar_alarmes.js') ?>"></script>

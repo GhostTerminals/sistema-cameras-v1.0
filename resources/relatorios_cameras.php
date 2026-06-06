@@ -20,7 +20,7 @@ try {
 }
 ?>
 
-<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/relatorios_cameras.css?v=<?= @filemtime(__DIR__ . '/../public/assets/css/pages/relatorios_cameras.css') ?>">
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/relatorios_cameras.css?v=<?= filemtime(__DIR__ . '/../public/assets/css/pages/relatorios_cameras.css') ?>">
 
 <div class="container-fluid mt-4 mb-4 relatorio-cameras-page">
     <div class="row mb-4">
@@ -163,7 +163,7 @@ try {
     <div class="mt-3">Carregando dados...</div>
 </div>
 
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/relatorios.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/relatorios.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/relatorios.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/relatorios.js') ?>"></script>
 
 
 

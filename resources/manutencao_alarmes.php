@@ -3,7 +3,7 @@ require_once __DIR__ . '/../inc/navbar.php';
 requererAcesso('supervisor');
 ?>
 
-<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/manutencao_alarmes_v2.css?v=<?= @filemtime(__DIR__ . '/../public/assets/css/pages/manutencao_alarmes_v2.css') ?>">
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/manutencao_alarmes_v2.css?v=<?= filemtime(__DIR__ . '/../public/assets/css/pages/manutencao_alarmes_v2.css') ?>">
 
 <div class="container-fluid mt-4 mb-4 manutencao-page">
     <!-- Header com título e ações -->
@@ -392,8 +392,8 @@ requererAcesso('supervisor');
 <script nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
 window._CSP_NONCE = '<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>';
 </script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui-utils.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/file-upload.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui/ErrorHandler.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/ui/ErrorHandler.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui/LoadingManager.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/ui/LoadingManager.js') ?>"></script>
-<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/manutencao_alarmes_v2.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/manutencao_alarmes_v2.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui-utils.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/file-upload.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui/ErrorHandler.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/ui/ErrorHandler.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui/LoadingManager.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/ui/LoadingManager.js') ?>"></script>
+<script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/manutencao_alarmes_v2.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/manutencao_alarmes_v2.js') ?>"></script>

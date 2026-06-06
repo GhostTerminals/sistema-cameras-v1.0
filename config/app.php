@@ -52,7 +52,7 @@ function configureSessionSecurity(): void
     ini_set('session.use_trans_sid', '0');
     ini_set('session.use_strict_mode', '1');
     ini_set('session.cookie_httponly', '1');
-    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_samesite', 'Strict');
     ini_set('session.sid_length', '48');
     ini_set('session.sid_bits_per_character', '6');
 
@@ -64,7 +64,7 @@ function configureSessionSecurity(): void
         'path' => '/',
         'secure' => $secureCookie,
         'httponly' => true,
-        'samesite' => 'Lax',
+        'samesite' => 'Strict',
     ]);
 }
 

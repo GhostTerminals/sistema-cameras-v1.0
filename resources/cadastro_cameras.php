@@ -41,7 +41,7 @@ $formData = $_SESSION['form_data'] ?? [];
 unset($_SESSION['form_data']);
 ?>
 
-<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/cadastro_cameras.css?v=<?= @filemtime(__DIR__ . '/../public/assets/css/pages/cadastro_cameras.css') ?>">
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/cadastro_cameras.css?v=<?= filemtime(__DIR__ . '/../public/assets/css/pages/cadastro_cameras.css') ?: 0 ?>">
 
 <div class="container mt-4 mb-5 camera-cadastro-page">
     <div class="row mb-3">
@@ -626,10 +626,10 @@ unset($_SESSION['form_data']);
     </div>
 </div>
 
-<script src="<?= BASE_URL ?>/assets/js/utils/uppercase.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/uppercase.js') ?>"></script>
-<script src="<?= BASE_URL ?>/assets/js/utils/ui-utils.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
-<script src="<?= BASE_URL ?>/assets/js/utils/file-upload.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
-<script src="<?= BASE_URL ?>/assets/js/cadastro_cameras.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/cadastro_cameras.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/utils/uppercase.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/uppercase.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/utils/ui-utils.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/ui-utils.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/utils/file-upload.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/utils/file-upload.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/cadastro_cameras.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/cadastro_cameras.js') ?>"></script>
 
 
 

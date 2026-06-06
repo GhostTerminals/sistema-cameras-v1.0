@@ -18,13 +18,14 @@
     <!-- Theme Enhancements (Dark Mode, Skeleton Loading, Accessibility, Responsive) -->
     <link rel="stylesheet" href="<?= htmlspecialchars($APP_BASE_PATH ?? '', ENT_QUOTES, 'UTF-8') ?>/assets/css/theme-enhancements.css">
     <script nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
-        // Define a BASE_URL para ser usada em requisicoes AJAX
         const BASE_URL = '<?= htmlspecialchars(rtrim($APP_PUBLIC_PATH ?? '/public', '/') . '/', ENT_QUOTES, 'UTF-8') ?>';
         const APP_API_BASE = `${BASE_URL}index.php?page=api/`;
-        const CSRF_TOKEN = '<?= htmlspecialchars(getCsrfToken(), ENT_QUOTES, 'UTF-8') ?>';
         window.BASE_URL = BASE_URL;
         window.APP_API_BASE = APP_API_BASE;
-        window.CSRF_TOKEN = CSRF_TOKEN;
+        window.CSRF_TOKEN = function() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            return meta ? meta.getAttribute('content') : '';
+        };
     </script>
     <meta name="csrf-token" content="<?= htmlspecialchars(getCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
 </head>
@@ -39,7 +40,7 @@
     }
 </script>
 <script src="<?= htmlspecialchars($APP_BASE_PATH ?? '', ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/fetchWithTimeout.js"></script>
-<script src="<?= htmlspecialchars($APP_BASE_PATH ?? '', ENT_QUOTES, 'UTF-8') ?>/assets/js/main.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/main.js') ?>"></script>
+<script src="<?= htmlspecialchars($APP_BASE_PATH ?? '', ENT_QUOTES, 'UTF-8') ?>/assets/js/main.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/main.js') ?: 0 ?>"></script>
 <!-- Theme Manager (Dark Mode Toggle + Skeleton Loader + Accessibility) -->
 <script src="<?= htmlspecialchars($APP_BASE_PATH ?? '', ENT_QUOTES, 'UTF-8') ?>/assets/js/utils/ui/theme-manager.js"></script>
 <script nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">

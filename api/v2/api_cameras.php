@@ -31,12 +31,7 @@ try {
     }
 
     $id = max(0, (int)($_GET['id'] ?? 0));
-    $buscaRaw = trim((string)($_GET['busca'] ?? ''));
-    $buscaNorm = preg_replace('/\.+/', '.', $buscaRaw);
-    if (strpos($buscaNorm, '/') !== false) {
-        $buscaNorm = explode('/', $buscaNorm)[0];
-    }
-    $busca = $buscaRaw;
+    $busca = trim((string)($_GET['busca'] ?? ''));
 
     $status = trim($_GET['status'] ?? '');
     $modeloId = (int)($_GET['modelo_id'] ?? 0);
@@ -59,28 +54,38 @@ try {
     }
 
     if ($busca !== '') {
-        $whereParts[] = '(
-            COALESCE(l.nome, \'\') LIKE :busca1
-            OR e.ip LIKE :busca2
-            OR e.numero_serie LIKE :busca3
-            OR cm.nome LIKE :busca4
-            OR sec.nome LIKE :busca5
-            OR CAST(e.id AS CHAR) LIKE :busca6
-            OR e.ip LIKE :busca_ip_norm
-        )';
         $buscaParam = '%' . $busca . '%';
-        $params[':busca1'] = $buscaParam;
-        $params[':busca2'] = $buscaParam;
-        $params[':busca3'] = $buscaParam;
-        $params[':busca4'] = $buscaParam;
-        $params[':busca5'] = $buscaParam;
-        $params[':busca6'] = $buscaParam;
-        $params[':busca_ip_norm'] = '%' . $buscaNorm . '%';
 
-        if (filter_var($buscaNorm, FILTER_VALIDATE_IP)) {
-            $whereParts[] = 'INET_ATON(e.ip) = INET_ATON(:busca_ip)';
-            $params[':busca_ip'] = $buscaNorm;
+        $buscaParts = [];
+        $isIp = filter_var($busca, FILTER_VALIDATE_IP);
+
+        if ($isIp) {
+            $buscaParts[] = 'INET_ATON(e.ip) = INET_ATON(:busca_ip)';
+            $params[':busca_ip'] = $busca;
+        } else {
+            $buscaParts[] = '(e.ip LIKE :busca_ip_like OR e.numero_serie LIKE :busca_serie)';
+            $params[':busca_ip_like'] = $buscaParam;
+            $params[':busca_serie'] = $buscaParam;
         }
+
+        if (strlen($busca) >= 3) {
+            $buscaParts[] = 'MATCH(l.nome, l.logradouro, l.bairro) AGAINST(:busca_fulltext IN BOOLEAN MODE)';
+            $params[':busca_fulltext'] = $busca . '*';
+
+            $buscaParts[] = 'MATCH(cm.nome) AGAINST(:busca_modelo IN BOOLEAN MODE)';
+            $params[':busca_modelo'] = $busca . '*';
+
+            $buscaParts[] = 'MATCH(sec.nome) AGAINST(:busca_secretaria IN BOOLEAN MODE)';
+            $params[':busca_secretaria'] = $busca . '*';
+        } else {
+            $buscaParts[] = '(l.nome LIKE :busca_local OR cm.nome LIKE :busca_cm OR sec.nome LIKE :busca_sec OR CAST(e.id AS CHAR) LIKE :busca_id)';
+            $params[':busca_local'] = $buscaParam;
+            $params[':busca_cm'] = $buscaParam;
+            $params[':busca_sec'] = $buscaParam;
+            $params[':busca_id'] = $buscaParam;
+        }
+
+        $whereParts[] = '(' . implode(' OR ', $buscaParts) . ')';
     }
 
     if ($status !== '') {
@@ -113,6 +118,12 @@ try {
         LEFT JOIN equipamentos_totem etot ON etot.equipamento_id = e.id
         LEFT JOIN classificacao_enderecos ce ON l.classificacao_endereco_id = ce.id
         LEFT JOIN tipo_cameras tc ON e.tipo_camera_id = tc.id
+        LEFT JOIN (
+            SELECT equipamento_id, MIN(os_status_id) AS manutencao_status
+            FROM equipamentos_manutencoes
+            WHERE os_status_id IN (1, 2)
+            GROUP BY equipamento_id
+        ) em ON em.equipamento_id = e.id
         {$whereSql}
     ";
 
@@ -126,7 +137,7 @@ try {
     $sql = "SELECT
                 e.id,
                 COALESCE(l.nome, CONCAT('EQUIPAMENTO ', e.id)) AS descricao,
-                EXISTS (SELECT 1 FROM equipamentos_manutencoes em WHERE em.equipamento_id = e.id AND em.os_status_id IN (1, 2)) AS em_manutencao,
+                CASE WHEN em.manutencao_status IS NOT NULL THEN 1 ELSE 0 END AS em_manutencao,
                 e.ip,
                 e.numero_serie,
                 e.numero_serie AS serie_mac,

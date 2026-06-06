@@ -31,9 +31,9 @@ if ($forwarded !== '') {
     $ip = ($realIp !== '' && filter_var($realIp, FILTER_VALIDATE_IP)) ? $realIp : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
 }
 $key = strtolower(trim((string)$usuario)) . '|' . $ip;
-$maxAttempts = 5;
-$windowSeconds = 900;
-$lockSeconds = 900;
+$maxAttempts = LOGIN_MAX_ATTEMPTS;
+$windowSeconds = LOGIN_WINDOW_SECONDS;
+$lockSeconds = LOGIN_LOCK_SECONDS;
 
 function readLoginAttempt(database $db, string $username, string $ip, int $now): ?array
 {

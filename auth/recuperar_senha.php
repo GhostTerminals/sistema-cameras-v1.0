@@ -11,42 +11,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
     if (!validateCsrfToken($csrfToken)) {
         $erro = 'Falha de validacao CSRF.';
     } else {
-        $usuario = trim($_POST['text_usuario'] ?? '');
+        $rateLimitPassed = true;
+        if (class_exists('RateLimiter', false)) {
+            $rateLimiter = new RateLimiter();
+            $rateLimitKey = 'recuperar_senha:' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+            if (!$rateLimiter->consume($rateLimitKey, 3, 900)) {
+                $erro = 'Muitas tentativas. Aguarde 15 minutos antes de tentar novamente.';
+                $rateLimitPassed = false;
+            }
+        }
 
-        if ($usuario === '') {
-            $erro = 'Informe o nome de usuario.';
-        } else {
-            $result = $db->query(
-                "SELECT id, nome FROM usuarios WHERE usuario = :usuario AND ativo = 1",
-                [':usuario' => $usuario]
-            );
+        if ($rateLimitPassed) {
+            $usuario = trim($_POST['text_usuario'] ?? '');
 
-            if ($result['status'] === 'success' && !empty($result['data'])) {
-                $userData = $result['data'][0];
-                $novaSenha = generateTemporaryPassword();
-                $senhaHash = hashPassword($novaSenha);
-
-                $update = $db->query(
-                    "UPDATE usuarios SET senha = :senha, senha_temporaria = 1 WHERE id = :id",
-                    [':senha' => $senhaHash, ':id' => $userData->id]
+            if ($usuario === '') {
+                $erro = 'Informe o nome de usuario.';
+            } else {
+                $result = $db->query(
+                    "SELECT id, nome FROM usuarios WHERE usuario = :usuario AND ativo = 1",
+                    [':usuario' => $usuario]
                 );
 
-                if ($update['status'] === 'success') {
-                    auditEvent($db, 'usuarios', (int)$userData->id, 'UPDATE', [
-                        'senha_temporaria' => 0
-                    ], [
-                        'senha_temporaria' => 1,
-                        'motivo' => 'recuperacao_de_senha'
-                    ], 'web');
+                if ($result['status'] === 'success' && !empty($result['data'])) {
+                    $userData = $result['data'][0];
+                    $novaSenha = generateTemporaryPassword();
+                    $senhaHash = hashPassword($novaSenha);
 
-                    $_SESSION['sucesso_recuperar'] = $novaSenha;
-                    header('Location: ?page=recuperar_senha');
-                    exit;
+                    $update = $db->query(
+                        "UPDATE usuarios SET senha = :senha, senha_temporaria = 1 WHERE id = :id",
+                        [':senha' => $senhaHash, ':id' => $userData->id]
+                    );
+
+                    if ($update['status'] === 'success') {
+                        auditEvent($db, 'usuarios', (int)$userData->id, 'UPDATE', [
+                            'senha_temporaria' => 0
+                        ], [
+                            'senha_temporaria' => 1,
+                            'motivo' => 'recuperacao_de_senha'
+                        ], 'web');
+
+                        $_SESSION['sucesso_recuperar'] = $novaSenha;
+                        header('Location: ?page=recuperar_senha');
+                        exit;
+                    } else {
+                        $erro = 'Erro ao redefinir a senha. Tente novamente.';
+                    }
                 } else {
-                    $erro = 'Erro ao redefinir a senha. Tente novamente.';
+                    $erro = 'Usuario nao encontrado ou inativo.';
                 }
-            } else {
-                $erro = 'Usuario nao encontrado ou inativo.';
             }
         }
     }

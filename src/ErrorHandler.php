@@ -44,7 +44,11 @@ function registerGlobalErrorHandlers(string $context = 'web'): void
         if (!headers_sent()) {
             header('Content-Type: text/html; charset=UTF-8');
         }
-        echo 'Erro interno do servidor.';
+        if (file_exists(__DIR__ . '/../resources/500.php')) {
+            include __DIR__ . '/../resources/500.php';
+        } else {
+            echo '<div class="container mt-5 text-center"><h2>Erro interno do servidor.</h2></div>';
+        }
         exit;
     });
 
@@ -87,7 +91,11 @@ function registerGlobalErrorHandlers(string $context = 'web'): void
         if (!headers_sent()) {
             header('Content-Type: text/html; charset=UTF-8');
         }
-        echo 'Erro interno do servidor.';
+        if (file_exists(__DIR__ . '/../resources/500.php')) {
+            include __DIR__ . '/../resources/500.php';
+        } else {
+            echo 'Erro interno do servidor.';
+        }
     });
 }
 

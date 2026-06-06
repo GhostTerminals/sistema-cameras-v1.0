@@ -98,8 +98,8 @@ try {
     $uploadDir = __DIR__ . '/../../public/uploads/' . $subdir . '/';
     $caminhoAbsoluto = $uploadDir . $nomeArquivo;
 
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0755, true);
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+        ApiResponse::internalError('Falha ao criar diretório de upload.');
     }
 
     if (!move_uploaded_file($file['tmp_name'], $caminhoAbsoluto)) {
@@ -131,7 +131,7 @@ try {
 
         $anexoId = (int)$db->lastInsertId();
     } catch (Throwable $e) {
-        @unlink($caminhoAbsoluto);
+        if (is_file($caminhoAbsoluto)) { unlink($caminhoAbsoluto); }
         error_log('Erro ao inserir anexo: ' . $e->getMessage());
         ApiResponse::internalError('Erro ao registrar anexo no banco de dados.');
     }

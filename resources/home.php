@@ -8,7 +8,7 @@ if (!isset($_SESSION['usuario'])) {
 }
 ?>
 
-<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/home.css?v=<?= @filemtime(__DIR__ . '/../public/assets/css/pages/home.css') ?>">
+<link rel="stylesheet" href="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/css/pages/home.css?v=<?= filemtime(__DIR__ . '/../public/assets/css/pages/home.css') ?>">
 
 <div class="container-fluid mt-3">
     <!-- Boas-vindas do usuario -->

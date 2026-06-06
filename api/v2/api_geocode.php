@@ -50,7 +50,7 @@ try {
                 'header' => "Accept: application/json\r\nUser-Agent: sistema-cameras/1.0\r\n"
             ]
         ]);
-        $raw = @file_get_contents($url, false, $context);
+        $raw = file_get_contents($url, false, $context);
         if ($raw === false) {
             return ['ok' => false, 'error' => 'file_get_contents falhou'];
         }

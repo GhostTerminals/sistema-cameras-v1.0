@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../inc/navbar.php';
 
-// Verificar se usuário tem acesso
+// Verificar se usuï¿½rio tem acesso
 if (!isset($_SESSION['usuario'])) {
     header('Location: index.php?page=login');
     exit;
@@ -20,7 +20,7 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">
-                            <i class="fas fa-camera me-2"></i>Lista de Câmeras Cadastradas
+                            <i class="fas fa-camera me-2"></i>Lista de Cï¿½meras Cadastradas
                         </h4>
                         <div>
                             <a href="?page=controle_cameras" class="btn btn-outline-light btn-sm py-1 me-2"
@@ -32,8 +32,8 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                             <a href="?page=cadastro_cameras" class="btn btn-success btn-sm py-1"
-                                title="Cadastrar nova câmera" data-bs-toggle="tooltip">
-                                <i class="fas fa-plus me-1"></i>Nova Câmera
+                                title="Cadastrar nova cï¿½mera" data-bs-toggle="tooltip">
+                                <i class="fas fa-plus me-1"></i>Nova Cï¿½mera
                             </a>
                         </div>
                     </div>
@@ -85,14 +85,14 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
                         </div>
                     </div>
 
-                    <!-- Lista de Câmeras -->
+                    <!-- Lista de Cï¿½meras -->
                     <div class="row">
                         <div class="col-12">
                             <div class="card border-info">
                                 <div
                                     class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                                     <h5 class="mb-0">
-                                        <i class="fas fa-video me-2"></i>Câmeras Cadastradas
+                                        <i class="fas fa-video me-2"></i>Cï¿½meras Cadastradas
                                     </h5>
                                     <span class="badge bg-light text-dark" id="contadorCameras">0</span>
                                 </div>
@@ -100,7 +100,7 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
                                     <div id="listaCameras">
                                         <div class="text-center text-muted py-4">
                                             <i class="fas fa-spinner fa-spin fa-2x mb-2"></i>
-                                            <p>Carregando câmeras...</p>
+                                            <p>Carregando cï¿½meras...</p>
                                         </div>
                                     </div>
                                     <div id="paginacaoCameras" class="mt-3"></div>
@@ -114,14 +114,14 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
     </div>
 </div>
 
-<!-- Modal de Confirmação de Exclusão -->
+<!-- Modal de Confirmaï¿½ï¿½o de Exclusï¿½o -->
 <div class="modal fade" id="modalConfirmacaoExclusao" tabindex="-1" aria-labelledby="modalConfirmacaoExclusaoLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="modalConfirmacaoExclusaoLabel">
-                    <i class="fas fa-trash me-2"></i>Confirmar Exclusão
+                    <i class="fas fa-trash me-2"></i>Confirmar Exclusï¿½o
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -129,12 +129,12 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
                 <div class="mb-3">
                     <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
                 </div>
-                <h5 class="mb-3">Confirmar exclusão da câmera?</h5>
-                <p class="text-muted mb-1">Você está prestes a excluir a câmera:</p>
+                <h5 class="mb-3">Confirmar exclusï¿½o da cï¿½mera?</h5>
+                <p class="text-muted mb-1">Vocï¿½ estï¿½ prestes a excluir a cï¿½mera:</p>
                 <p class="h6 text-primary mb-3" id="cameraInfo"></p>
                 <div class="alert alert-warning small">
                     <i class="fas fa-exclamation-triangle me-1"></i>
-                    Esta ação não pode ser desfeita.
+                    Esta aï¿½ï¿½o nï¿½o pode ser desfeita.
                 </div>
             </div>
             <div class="modal-footer justify-content-center">
@@ -149,19 +149,19 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
     </div>
 </div>
 
-<!-- Modal de Detalhes da Câmera -->
+<!-- Modal de Detalhes da Cï¿½mera -->
 <div class="modal fade" id="modalDetalhesCamera" tabindex="-1" aria-labelledby="modalDetalhesCameraLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-info text-white">
                 <h5 class="modal-title" id="modalDetalhesCameraLabel">
-                    <i class="fas fa-info-circle me-2"></i>Detalhes da Câmera
+                    <i class="fas fa-info-circle me-2"></i>Detalhes da Cï¿½mera
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="detalhesCameraContent">
-                <!-- Conteúdo será preenchido via JavaScript -->
+                <!-- Conteï¿½do serï¿½ preenchido via JavaScript -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -176,4 +176,4 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
 </div>
 
 <div id="listarCamerasConfig" style="display:none;" data-api-url="<?= htmlspecialchars($api_url, ENT_QUOTES, 'UTF-8') ?>" data-can-delete="<?= $canDelete ? '1' : '0' ?>"></div>
-<script src="<?= BASE_URL ?>/assets/js/listar_cameras.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/listar_cameras.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/listar_cameras.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/listar_cameras.js') ?>"></script>

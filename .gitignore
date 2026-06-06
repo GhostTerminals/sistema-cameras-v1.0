@@ -13,6 +13,7 @@ Thumbs.db
 # PHP
 vendor/
 .phpunit.cache/
+composer.phar
 
 # Node
 node_modules/

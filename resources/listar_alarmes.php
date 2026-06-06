@@ -116,4 +116,4 @@ $canDelete = isset($_SESSION['usuario']->nivel_acesso)
 </div>
 
 <div id="listarAlarmesConfig" style="display:none;" data-api-url="<?= htmlspecialchars($api_url, ENT_QUOTES, 'UTF-8') ?>"></div>
-<script src="<?= BASE_URL ?>/assets/js/listar_alarmes.js?v=<?= @filemtime(__DIR__ . '/../public/assets/js/listar_alarmes.js') ?>"></script>
+<script src="<?= BASE_URL ?>/assets/js/listar_alarmes.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/listar_alarmes.js') ?>"></script>
