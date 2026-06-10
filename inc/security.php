@@ -50,7 +50,7 @@ function rotateCsrfToken(): void
     $_SESSION['csrf_token'] = bin2hex(random_bytes(CSRF_TOKEN_BYTES));
 }
 
-function requireApiCsrf(): void
+function requireApiCsrf(bool $rotate = true): void
 {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
     $safeMethods = ['GET', 'HEAD', 'OPTIONS'];
@@ -75,7 +75,11 @@ function requireApiCsrf(): void
         exit;
     }
 
-    rotateCsrfToken();
+    if ($rotate) {
+        rotateCsrfToken();
+    }
+
+    header('X-CSRF-Token: ' . ($_SESSION['csrf_token'] ?? ''));
 }
 
 function currentUserId(): ?int

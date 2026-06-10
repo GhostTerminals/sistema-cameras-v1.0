@@ -19,6 +19,11 @@
 
         return originalFetch.call(window, input, init).then(function (response) {
             clearTimeout(timeoutId);
+            var csrfHeader = response.headers.get('X-CSRF-Token');
+            if (csrfHeader) {
+                var meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) meta.setAttribute('content', csrfHeader);
+            }
             return response;
         })['catch'](function (err) {
             clearTimeout(timeoutId);

@@ -54,9 +54,12 @@ try {
         registerUniqueSession($db, $usuarioId, $sessionToken);
     }
 
+    $newCsrfToken = $_SESSION['csrf_token'] ?? null;
+
     ApiResponse::success([
         'message' => 'Sessão renovada',
         'time_left' => $tempo_maximo,
+        'csrf_token' => $newCsrfToken,
     ]);
 
 } catch (Throwable $e) {

@@ -601,8 +601,8 @@ class CadastroCamera {
         // Mapear tipo_logradouro string → classificacao_endereco_id (int)
         const classificacaoMap = {
             'RUA': 1, 'AVENIDA': 2, 'TRAVESSA': 3, 'RODOVIA': 4,
-            'ALAMEDA': 5, 'PRACA': 6, 'PARQUE': 7, 'ESTRADA RURAL': 8,
-            'CHACARA': 9, 'OUTRO': 10
+            'ALAMEDA': 5, 'PRACA': 6, 'PARQUE': 7, 'ESTRADA': 8,
+            'ESTRADA RURAL': 8, 'CHACARA': 9, 'OUTRO': 10
         };
         const tipoLogradouro = data['tipo_logradouro'];
         if (tipoLogradouro && classificacaoMap[tipoLogradouro]) {

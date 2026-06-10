@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const csrf = document.createElement('input');
         csrf.type = 'hidden';
         csrf.name = 'csrf_token';
-        csrf.value = CSRF_TOKEN || '';
+        csrf.value = CSRF_TOKEN();
         form.appendChild(csrf);
 
         if (logoutAll) {
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 credentials: 'same-origin',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-Token': CSRF_TOKEN
+                    'X-CSRF-Token': CSRF_TOKEN()
                 }
             })
             .then(async response => {
@@ -162,6 +162,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 lastRenewAt = Date.now();
                 timeLeft = tempoMaximo;
+
+                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                if (data.csrf_token && metaTag) {
+                    metaTag.setAttribute('content', data.csrf_token);
+                }
 
                 if (modalShown) {
                     sessionModal.hide();

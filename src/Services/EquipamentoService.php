@@ -57,7 +57,7 @@ class EquipamentoService
             'cep' => trim((string)($data['cep'] ?? '')) ?: null,
             'numero' => trim((string)($data['numero'] ?? '')) ?: null,
             'tem_alarme' => !empty($data['tem_alarme']) ? 1 : 0,
-            'alarme_conta' => null,
+            'alarme_conta' => !empty($data['alarme_conta']) ? (int)$data['alarme_conta'] : null,
             'patrimonio' => !empty($data['patrimonio']) ? strtoupper(trim($data['patrimonio'])) : null,
             'numero_serie' => !empty($data['serie_mac']) ? strtoupper(trim($data['serie_mac'])) : null,
             'observacao' => !empty($data['observacao']) ? trim($data['observacao']) : null,
@@ -144,6 +144,20 @@ class EquipamentoService
     public function updateLocationFields(int $localId, array $data): void
     {
         $fields = $this->extractCommonData($data);
+
+        if (!empty($fields['tem_alarme'])) {
+            if (empty($fields['alarme_conta'])) {
+                throw new Exception('Informe a conta do alarme.');
+            }
+            $checkConta = $this->db->query(
+                "SELECT conta FROM central_alarmes WHERE conta = ? LIMIT 1",
+                [$fields['alarme_conta']]
+            );
+            if ($checkConta['status'] !== 'success' || empty($checkConta['data'])) {
+                throw new Exception('Conta do alarme informada não encontrada na central de alarmes.');
+            }
+        }
+
         $this->db->query(
             "UPDATE locais SET tem_alarme = ?, alarme_conta = ?, logradouro = ?, bairro = ?, cidade = ?, uf = ?, cep = ?, numero = ?, descricao_posicao = ?, tipo_local_id = ?, classificacao_endereco_id = ? WHERE id = ?",
             [$fields['tem_alarme'], $fields['alarme_conta'], $fields['logradouro'], $fields['bairro'], $fields['cidade'], $fields['uf'], $fields['cep'], $fields['numero'], $fields['descricao_posicao'], max(1, (int)($data['tipo_local_id'] ?? 0)), $fields['classif_endereco_id'], $localId]
@@ -218,7 +232,7 @@ class EquipamentoService
         }
     }
 
-    public function validateTipoSpecific(int $tipoId, string $dvrModelo, ?int $totemQuantidadeCameras): void
+    public function validateTipoSpecific(int $tipoId, ?string $dvrModelo, ?int $totemQuantidadeCameras): void
     {
         if ($tipoId === 3 && empty($dvrModelo)) {
             throw new Exception('Informe o modelo do DVR.');

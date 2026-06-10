@@ -155,9 +155,11 @@ function executeApiRequest(?string $endpointOverride = null): void
     }
 
     $publicEndpoints = ['auth/login', 'auth/register', 'ping', 'api_ping'];
+    $noRotateEndpoints = ['renovar_sessao'];
     if (!in_array($endpoint, $publicEndpoints, true)) {
         requireApiAccessForEndpoint($endpoint);
-        requireApiCsrf();
+        $shouldRotate = !in_array($endpoint, $noRotateEndpoints, true);
+        requireApiCsrf($shouldRotate);
     }
 
     if ($exists && file_exists($filepath)) {
