@@ -1,7 +1,7 @@
 FROM php:8.1-apache AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev curl \
+        libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev curl libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
@@ -37,6 +37,11 @@ COPY inc/ /var/www/html/inc/
 COPY public/ /var/www/html/public/
 COPY resources/ /var/www/html/resources/
 COPY src/ /var/www/html/src/
+COPY composer.json composer.lock /var/www/html/
+
+# Instalar dependências Composer
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/var/www/html
 
 RUN rm -f /var/www/html/.env && \
     chown -R www-data:www-data /var/www/html && \
