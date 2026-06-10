@@ -128,7 +128,7 @@ class RequestValidator
         if (is_string($value)) {
             return strlen(trim($value)) > 0;
         }
-        return $value !== null && $value !== '';
+        return $value !== null;
     }
 
     /**

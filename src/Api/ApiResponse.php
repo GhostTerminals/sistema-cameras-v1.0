@@ -55,7 +55,7 @@ class ApiResponse
     public static function getRequestId(): string
     {
         if (empty(self::$requestId)) {
-            self::$requestId = 'req_' . substr(hash('sha256', uniqid(mt_rand(), true)), 0, 16);
+            self::$requestId = 'req_' . substr(hash('sha256', uniqid((string)mt_rand(), true)), 0, 16);
         }
         return self::$requestId;
     }
