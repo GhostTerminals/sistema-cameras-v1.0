@@ -1,36 +1,41 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
-BACKUP_DIR="${BACKUP_DIR:-./backups}"
-DB_HOST="${DB_HOST:-localhost}"
-DB_NAME="${DB_NAME:-cftv_gml}"
-DB_USER="${DB_USER:-root}"
-DB_PASS="${DB_PASS:-}"
-RETENTION_DAYS="${RETENTION_DAYS:-30}"
+BACKUP_DIR="/opt/backups"
+RETENTION_DAYS=7
+DATE=$(date +%Y%m%d_%H%M%S)
+LOG_FILE="${BACKUP_DIR}/backup.log"
 
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-BACKUP_PATH="${BACKUP_DIR}/${DB_NAME}"
-mkdir -p "$BACKUP_PATH"
+mkdir -p "${BACKUP_DIR}"
 
-FILENAME="${DB_NAME}-${TIMESTAMP}.sql"
-FILEPATH="${BACKUP_PATH}/${FILENAME}"
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "${LOG_FILE}"
+}
 
-echo "[Backup] Starting backup of ${DB_NAME}..."
+log "=== Iniciando backup ==="
 
-MYSQL_PWD="${DB_PASS}" mysqldump \
-    --host="${DB_HOST}" \
-    --user="${DB_USER}" \
-    --single-transaction \
-    --routines \
-    --triggers \
-    --events \
-    --databases "${DB_NAME}" > "$FILEPATH"
+# MySQL dump cameras
+log "Dump cameras-db..."
+docker exec cameras-db mysqldump -u root -pBXvqILfsqXV3q7zbL2J9g2DpStzoUPpi \
+  --all-databases --single-transaction --routines --triggers --events 2>/dev/null | \
+  gzip > "${BACKUP_DIR}/cameras-db_${DATE}.sql.gz"
 
-echo "[Backup] Saved: ${FILEPATH} ($(du -h "$FILEPATH" | cut -f1))"
+# MySQL dump visitantes
+log "Dump visitantes-db..."
+docker exec visitantes-db mysqldump -u root -pSGVUUmBV1e0ztGTqVeZxqqQCSpAySGcU \
+  --all-databases --single-transaction --routines --triggers --events 2>/dev/null | \
+  gzip > "${BACKUP_DIR}/visitantes-db_${DATE}.sql.gz"
 
-gzip -f "$FILEPATH"
-echo "[Backup] Compressed: ${FILEPATH}.gz"
+# Volume fotos_visitantes
+log "Backup fotos_visitantes..."
+docker run --rm \
+  -v sistema-visitantes-v10_fotos_visitantes:/data \
+  -v "${BACKUP_DIR}:/backup" \
+  alpine tar czf "/backup/fotos_visitantes_${DATE}.tar.gz" -C /data .
 
-find "$BACKUP_PATH" -name "*.sql.gz" -mtime +${RETENTION_DAYS} -delete
-echo "[Backup] Old backups (>${RETENTION_DAYS}d) cleaned up"
-echo "[Backup] Done!"
+# Cleanup old backups
+log "Removendo backups com mais de ${RETENTION_DAYS} dias..."
+find "${BACKUP_DIR}" \( -name "*.sql.gz" -o -name "*.tar.gz" \) -type f -mtime +${RETENTION_DAYS} -delete -print
+
+log "=== Backup concluido ==="
+echo "Backup salvo em: ${BACKUP_DIR}"

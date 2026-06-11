@@ -1,6 +1,6 @@
 {
     "name": "gml/sistema-cameras",
-    "description": "Sistema de Gerenciamento de Câmeras - GML",
+    "description": "Sistema de Gerenciamento de Câmeras de Segurança",
     "type": "project",
     "require": {
         "php": ">=8.1",
