@@ -82,6 +82,7 @@ try {
         LEFT JOIN tipo_cameras tc ON e.tipo_camera_id = tc.id
         LEFT JOIN classificacao_enderecos ce ON l.classificacao_endereco_id = ce.id
         LEFT JOIN equipamentos_camera ec ON ec.equipamento_id = e.id
+        LEFT JOIN equipamentos_lpr elpr ON elpr.equipamento_id = e.id
         LEFT JOIN central_alarmes ca ON l.alarme_conta = ca.conta
         {$whereSql}
     ";
@@ -100,7 +101,7 @@ try {
             COALESCE(l.nome, CONCAT('EQUIPAMENTO ', e.id)) AS descricao,
             e.ip,
             e.porta,
-            e.url_acesso,
+            elpr.url_acesso,
             e.numero_serie AS serie_mac,
             e.patrimonio,
             e.data_instalacao,

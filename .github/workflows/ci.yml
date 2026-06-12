@@ -14,14 +14,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.3
           tools: composer, phpstan
       - name: Check PHP syntax
         run: find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -exec php -l {} \;
+      - name: Install dev dependencies
+        run: composer install --prefer-dist
       - name: Run PHP linter (PHPStan)
-        run: |
-          composer install --no-dev 2>/dev/null
-          phpstan analyse src api inc --level=5 --no-progress
+        run: phpstan analyse src api inc --level=5 --no-progress
+
+  js-lint:
+    name: 🔍 JS & CSS Lint Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Check JS files exist
+        run: test -f public/assets/js/main.js && test -f public/assets/js/utils/fetchWithTimeout.js
 
   unit-tests:
     name: ✅ Unit & Integration Tests
@@ -40,16 +53,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.3
           tools: phpunit:10, composer
-      - name: Composer install
-        run: composer install --no-dev --prefer-dist
+      - name: Install dev dependencies
+        run: composer install --prefer-dist
       - name: Wait for MySQL
         run: |
           for i in $(seq 1 30); do
             mysqladmin ping -h127.0.0.1 --silent && break
             sleep 1
           done
+      - name: Validate SQL dump exists
+        run: test -f config/DB/cftv_gml.sql
       - name: Setup test database
         run: |
           mysql -h127.0.0.1 -uroot cftv_gml_test < config/DB/cftv_gml.sql
@@ -62,10 +77,10 @@ jobs:
           CAMERAS_ENV: testing
         run: phpunit --configuration phpunit.xml --do-not-cache-result --coverage-text
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         if: always()
         with:
-          files: ./coverage.xml
+          files: ./clover.xml
           fail_ci_if_error: false
 
   security-checks:
@@ -96,7 +111,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
+          php-version: 8.3
       - name: Setup environment
         run: |
           cp .env.example .env || cp .env.template .env
@@ -127,7 +142,7 @@ jobs:
 
   summary:
     name: 📊 Test Summary
-    needs: [php-lint, unit-tests, security-checks, smoke-tests]
+    needs: [php-lint, js-lint, unit-tests, security-checks, smoke-tests]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -135,7 +150,7 @@ jobs:
         run: |
           echo "✅ CI/CD Pipeline completed"
           echo "  - PHP Lint: ${{ needs.php-lint.result }}"
+          echo "  - JS Lint: ${{ needs.js-lint.result }}"
           echo "  - Unit Tests: ${{ needs.unit-tests.result }}"
           echo "  - Security: ${{ needs.security-checks.result }}"
           echo "  - Smoke Tests: ${{ needs.smoke-tests.result }}"
-

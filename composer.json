@@ -3,7 +3,7 @@
     "description": "Sistema de Gerenciamento de Câmeras de Segurança",
     "type": "project",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "monolog/monolog": "^3.0"
     },
     "require-dev": {

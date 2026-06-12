@@ -28,8 +28,12 @@ try {
     $svc->beginTransaction();
 
     $fields = $svc->extractCommonData($data);
-    $equipId = max(1, (int)($data['id'] ?? 0));
-    $localId = max(1, (int)($data['local_id'] ?? 0));
+    $equipId = (int)($data['id'] ?? 0);
+    $localId = (int)($data['local_id'] ?? 0);
+
+    if ($equipId < 1 || $localId < 1) {
+        ApiResponse::error('VALIDATION_ERROR', 'IDs inválidos.');
+    }
 
     $svc->checkLocationExists($localId);
     $fields['classif_endereco_id'] = $svc->resolveClassificacaoEndereco(
@@ -38,6 +42,7 @@ try {
     );
 
     $modeloId = $svc->resolveModelo($fields['marca_id'], $fields['tipo_id'], $data);
+    $svc->validateCoordenadas($fields['coordenadas']);
     $svc->validateTipoSpecific($fields['tipo_id'], $fields['dvr_modelo'], $fields['totem_quantidade_cameras']);
 
     $before = $svc->loadBeforeSnapshot($equipId);

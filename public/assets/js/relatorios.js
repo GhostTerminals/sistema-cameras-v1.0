@@ -88,7 +88,7 @@ $(document).ready(function () {
     const timestamp = Date.now();
     const url = queryString ? `${apiUrl}&${queryString}&_t=${timestamp}` : `${apiUrl}?_t=${timestamp}`;
 
-    const response = await fetch(url, { cache: 'no-store' });
+    const response = await fetchWithTimeout(url, { cache: 'no-store' });
 
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status}`);
@@ -299,7 +299,7 @@ $(document).ready(function () {
         if (!th.classList.contains('column-hidden')) {
           const label = th.textContent.trim();
           visibleHeaders.push(label);
-          csv += (csv ? ';' : '') + label;
+          csv += (csv ? ';' : '') + '"' + label.replace(/"/g, '""') + '"';
         }
       });
       csv += '\n';

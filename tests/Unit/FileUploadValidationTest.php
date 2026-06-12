@@ -17,7 +17,8 @@ use PHPUnit\Framework\TestCase;
 class FileUploadValidationTest extends TestCase
 {
     /**
-     * MIME types permitidos conforme api_upload_anexo.php
+     * MIME types permitidos — deve refletir api_upload_anexo.php
+     * Se alterar o source, atualizar este array ou o teste falhará.
      */
     private const ALLOWED_MIMES = [
         'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp',
@@ -42,6 +43,24 @@ class FileUploadValidationTest extends TestCase
         'application/vnd.ms-excel' => 'xls',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
     ];
+
+    public function setUp(): void
+    {
+        if (!file_exists(__DIR__ . '/../../api/v2/api_upload_anexo.php')) {
+            $this->markTestSkipped('Upload endpoint source not found');
+        }
+    }
+
+    /**
+     * Testa que a allowlist do teste corresponde ao source real
+     */
+    public function testAllowlistMatchesSource(): void
+    {
+        $source = file_get_contents(__DIR__ . '/../../api/v2/api_upload_anexo.php');
+        $this->assertStringContainsString("'image/jpeg'", $source, 'Source must contain image/jpeg');
+        $this->assertStringContainsString("'application/pdf'", $source, 'Source must contain application/pdf');
+        $this->assertStringContainsString('10 * 1024 * 1024', $source, 'Source must define 10MB limit');
+    }
 
     /**
      * Testa que MIME type permitido é aceito

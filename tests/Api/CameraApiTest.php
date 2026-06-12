@@ -93,6 +93,50 @@ class CameraApiTest extends TestCase
         $this->assertEquals(422, $httpCode);
     }
 
+    public function testApiResponseFormatConsistency(): void
+    {
+        $response = $this->requestJson('/index.php?page=api/api_ping');
+        if ($response === null) {
+            $this->markTestSkipped("API server not reachable at {$this->baseUrl}");
+        }
+        $this->assertArrayHasKey('success', $response);
+        $this->assertArrayHasKey('code', $response);
+        $this->assertArrayHasKey('message', $response);
+        $this->assertArrayHasKey('meta', $response);
+        $this->assertArrayHasKey('timestamp', $response['meta'] ?? []);
+        $this->assertArrayHasKey('version', $response['meta'] ?? []);
+        $this->assertEquals('v2', $response['meta']['version'] ?? '');
+    }
+
+    /**
+     * Helper para fazer request autenticado via cookie de sessão
+     * Uso futuro: $this->requestWithSession('/index.php?page=api/api_cameras', $sessionId)
+     */
+    private function requestWithSession(string $path, string $sessionId, string $method = 'GET', ?string $body = null): array
+    {
+        $opts = [
+            'http' => [
+                'method' => $method,
+                'timeout' => 5,
+                'ignore_errors' => true,
+                'header' => "Cookie: PHPSESSID=" . urlencode($sessionId) . "\r\n",
+            ],
+        ];
+        if ($body !== null) {
+            $opts['http']['header'] .= "Content-Type: application/json\r\n";
+            $opts['http']['content'] = $body;
+        }
+        $context = stream_context_create($opts);
+        set_error_handler(static function (): bool { return true; });
+        try {
+            $content = file_get_contents($this->baseUrl . $path, false, $context);
+        } finally {
+            restore_error_handler();
+        }
+        $decoded = $content !== false ? json_decode($content, true) : null;
+        return is_array($decoded) ? $decoded : [];
+    }
+
     private function requestStatus(string $path, string $method = 'GET', ?string $body = null): int
     {
         $opts = [

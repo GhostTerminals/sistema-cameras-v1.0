@@ -57,7 +57,7 @@ async function carregarListaCameras(page = 1) {
         `;
 
         const params = buildQueryParams(page);
-        const response = await fetch(`${API_URL}&${params.toString()}`);
+        const response = await fetchWithTimeout(`${API_URL}&${params.toString()}`);
 
         if (!response.ok) {
             throw new Error(`Erro HTTP: ${response.status}`);
@@ -346,7 +346,7 @@ async function excluirCamera() {
         formData.append('id', currentCameraId);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-        const response = await fetch(`${window.APP_API_BASE}api_excluir_camera`, {
+        const response = await fetchWithTimeout(`${window.APP_API_BASE}api_excluir_camera`, {
             method: 'POST',
             headers: {
                 'X-CSRF-Token': csrfToken
@@ -434,9 +434,26 @@ function initListarCameras() {
             }
         });
 
-        window._listarCamerasInterval = setInterval(() => carregarListaCameras(currentPage), 120000);
+        function startAutoRefresh() {
+            window._listarCamerasInterval = setInterval(() => carregarListaCameras(currentPage), 120000);
+        }
+        function stopAutoRefresh() {
+            if (window._listarCamerasInterval) {
+                clearInterval(window._listarCamerasInterval);
+                window._listarCamerasInterval = null;
+            }
+        }
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+                carregarListaCameras(currentPage);
+            }
+        });
+        startAutoRefresh();
         window.addEventListener('beforeunload', function() {
-            clearInterval(window._listarCamerasInterval);
+            stopAutoRefresh();
         });
         document.getElementById('paginacaoCameras').addEventListener('click', function(event) {
             const actionButton = event.target.closest('[data-action]');

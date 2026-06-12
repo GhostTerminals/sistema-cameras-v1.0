@@ -19,7 +19,16 @@ class database
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_OBJ,
                 \PDO::ATTR_EMULATE_PREPARES => false,
                 \PDO::ATTR_TIMEOUT => 5,
+                \PDO::ATTR_PERSISTENT => false,
             ];
+
+            if (defined('ENVIRONMENT') && ENVIRONMENT === 'production') {
+                $sslCa = getenv('DB_SSL_CA');
+                if ($sslCa !== false && $sslCa !== '') {
+                    $options[\PDO::MYSQL_ATTR_SSL_CA] = $sslCa;
+                }
+                $options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
+            }
 
             $this->pdo = new \PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (\PDOException $err) {
@@ -45,18 +54,7 @@ class database
     {
         try {
             $stmt = $this->pdo->prepare($sql);
-            
-            if ($stmt === false) {
-                $errorInfo = $this->pdo->errorInfo();
-                $msg = 'Falha ao preparar query: ' . ($errorInfo[2] ?? 'Erro desconhecido');
-                error_log('Database error: ' . $msg);
-                return [
-                    'status' => 'error',
-                    'error' => 'Erro interno no banco de dados.',
-                    'error_code' => $errorInfo[1] ?? 0
-                ];
-            }
-            
+
             if (!empty($params)) {
                 foreach ($params as $key => $value) {
                     $paramType = PDO::PARAM_STR;

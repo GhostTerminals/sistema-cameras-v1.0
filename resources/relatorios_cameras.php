@@ -163,6 +163,7 @@ try {
     <div class="mt-3">Carregando dados...</div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha384-1H217gwSVyLSIfaLxHbE7dRb3v4mYCKbpQvzx0cegeju1MVsGrX5xXxAvs/HgeFs" crossorigin="anonymous"></script>
 <script src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/assets/js/relatorios.js?v=<?= filemtime(__DIR__ . '/../public/assets/js/relatorios.js') ?>"></script>
 
 

@@ -11,7 +11,7 @@ define('ACCESS_LEVEL_SUPERVISOR', 2);
 define('ACCESS_LEVEL_ADMIN', 3);
 
 define('CSRF_TOKEN_BYTES', 32);
-define('PASSWORD_MIN_LENGTH', 6);
+define('PASSWORD_MIN_LENGTH', 8);
 define('LOGIN_MAX_ATTEMPTS', 5);
 define('LOGIN_WINDOW_SECONDS', 900);
 define('LOGIN_LOCK_SECONDS', 900);
@@ -35,18 +35,11 @@ function validateCsrfToken(?string $token): bool
         return true;
     }
 
-    if (!empty($_SESSION['csrf_token_old']) && hash_equals($_SESSION['csrf_token_old'], $token)) {
-        return true;
-    }
-
     return false;
 }
 
 function rotateCsrfToken(): void
 {
-    if (!empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token_old'] = $_SESSION['csrf_token'];
-    }
     $_SESSION['csrf_token'] = bin2hex(random_bytes(CSRF_TOKEN_BYTES));
 }
 
@@ -178,11 +171,17 @@ ensureSessionUserAccessLevel();
 function validatePasswordPolicy(string $password, ?array &$errors = null): bool
 {
     $errors = [];
-    if (strlen($password) < PASSWORD_MIN_LENGTH) {
+    if (mb_strlen($password) < PASSWORD_MIN_LENGTH) {
         $errors[] = 'A senha deve ter pelo menos ' . PASSWORD_MIN_LENGTH . ' caracteres.';
     }
-    if (!preg_match('/^\d+$/', $password)) {
-        $errors[] = 'A senha deve conter apenas numeros.';
+    if (preg_match('/^\d+$/', $password)) {
+        $errors[] = 'A senha nao pode conter apenas numeros.';
+    }
+    if (!preg_match('/[a-zA-Z]/', $password)) {
+        $errors[] = 'A senha deve conter pelo menos uma letra.';
+    }
+    if (!preg_match('/\d/', $password)) {
+        $errors[] = 'A senha deve conter pelo menos um numero.';
     }
 
     return empty($errors);
@@ -193,7 +192,11 @@ function auditEvent($db, string $entidade, ?int $entidadeId, string $operacao, ?
     try {
         $usuarioId = currentUserId();
         $mapaOperacao = ['INSERT' => 1, 'UPDATE' => 2, 'DELETE' => 3];
-        $operacaoId = $mapaOperacao[strtoupper($operacao)] ?? 1;
+        $operacaoId = $mapaOperacao[strtoupper($operacao)] ?? null;
+        if ($operacaoId === null) {
+            error_log('Falha ao registrar auditoria: operacao desconhecida "' . $operacao . '"');
+            return;
+        }
         $db->query(
             "INSERT INTO auditoria_eventos (entidade, entidade_id, operacao_id, dados_antes, dados_depois, origem, changed_by, created_at)
              VALUES (:entidade, :entidade_id, :operacao_id, :dados_antes, :dados_depois, :origem, :changed_by, NOW())",
@@ -209,17 +212,46 @@ function auditEvent($db, string $entidade, ?int $entidadeId, string $operacao, ?
         );
     } catch (Throwable $e) {
         error_log('Falha ao registrar auditoria: ' . $e->getMessage());
+        writeAuditLog($entidade, $entidadeId, $operacao, $dadosAntes, $dadosDepois, $origem);
     }
 }
 
-function generateTemporaryPassword(int $length = 6): string
+/**
+ * Fallback: escrever auditoria em arquivo quando DB está indisponível
+ */
+function writeAuditLog(string $entidade, ?int $entidadeId, string $operacao, ?array $dadosAntes = null, ?array $dadosDepois = null, string $origem = 'web'): void
+{
+    try {
+        $logDir = defined('AUDIT_LOG_DIR') ? AUDIT_LOG_DIR : (ini_get('error_log') ? dirname(ini_get('error_log')) : sys_get_temp_dir());
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0755, true);
+        }
+        $logFile = rtrim($logDir, '/') . '/audit_' . date('Y-m-d') . '.log';
+        $entry = json_encode([
+            'timestamp' => date('Y-m-d\TH:i:sP'),
+            'entidade' => $entidade,
+            'entidade_id' => $entidadeId,
+            'operacao' => $operacao,
+            'dados_antes' => $dadosAntes,
+            'dados_depois' => $dadosDepois,
+            'origem' => $origem,
+            'changed_by' => currentUserId(),
+        ], JSON_UNESCAPED_UNICODE);
+        file_put_contents($logFile, $entry . "\n", FILE_APPEND | LOCK_EX);
+    } catch (Throwable $e2) {
+        error_log('Falha ao escrever auditoria em arquivo: ' . $e2->getMessage());
+    }
+}
+
+function generateTemporaryPassword(int $length = 12): string
 {
     $length = max(PASSWORD_MIN_LENGTH, $length);
-    $digits = '0123456789';
+    $chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&';
 
     $password = '';
+    $bytes = random_bytes($length);
     for ($i = 0; $i < $length; $i++) {
-        $password .= $digits[random_int(0, strlen($digits) - 1)];
+        $password .= $chars[ord($bytes[$i]) % strlen($chars)];
     }
 
     return $password;
@@ -228,7 +260,7 @@ function generateTemporaryPassword(int $length = 6): string
 // Funções centralizadas de segurança de senha
 function hashPassword(string $password): string
 {
-    return password_hash($password, PASSWORD_BCRYPT);
+    return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 }
 
 function verifyPassword(string $password, string $hash): bool

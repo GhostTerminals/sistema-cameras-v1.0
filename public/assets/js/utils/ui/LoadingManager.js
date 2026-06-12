@@ -47,30 +47,26 @@ class LoadingManager {
     }
     
     setupRequestInterceptor() {
-        // Interceptar fetch requests
-        const originalFetch = window.fetch;
-        
-        window.fetch = async (...args) => {
+        const fetchFn = window.fetchWithTimeout || window.fetch;
+        const self = this;
+
+        window.fetchWithTimeout = async function (...args) {
             const [resource, config = {}] = args;
-            
-            // Criar ID único para esta requisição
-            const requestId = this.generateRequestId(resource, config);
-            
-            // Iniciar loading
-            this.startLoading(requestId, config.metadata || {});
-            
+
+            const requestId = self.generateRequestId(resource, config);
+
+            self.startLoading(requestId, config.metadata || {});
+
             try {
-                const response = await originalFetch(...args);
-                
-                // Clonar response para poder ler múltiplas vezes
-                const clonedResponse = response.clone();
-                
-                // Finalizar loading
-                this.finishLoading(requestId);
-                
-                return clonedResponse;
+                const response = await (args.length > 2
+                    ? fetchFn(args[0], args[1], args[2])
+                    : fetchFn(args[0], args[1]));
+
+                self.finishLoading(requestId);
+
+                return response;
             } catch (error) {
-                this.finishLoading(requestId);
+                self.finishLoading(requestId);
                 throw error;
             }
         };

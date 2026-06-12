@@ -89,7 +89,7 @@
     try {
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Salvando...';
-      const response = await fetch(`${getApiBase()}api_cadastrar_alarmes`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_cadastrar_alarmes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

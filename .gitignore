@@ -1,5 +1,8 @@
 # Environment
 .env
+.env.*
+!.env.example
+!.env.template
 
 # OS
 .DS_Store
@@ -40,3 +43,21 @@ public/uploads/temp/
 
 # Nginx certificates (auto-assinados, gerados localmente)
 nginx/certs/
+
+# SSL / TLS
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Backups & temp
+*.bak
+*.swp
+*.tmp
+*~
+*.orig
+*.rej
+
+# Docker
+docker-compose.override.yml

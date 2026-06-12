@@ -5,7 +5,7 @@
             Controle de Cameras
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -77,7 +77,7 @@
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle me-1"></i>
                         <strong><?= htmlspecialchars($_SESSION['usuario']->usuario ?? '') ?></strong>
-                        <?php if (isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria == 1): ?>
+                        <?php if (isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria === 1): ?>
                         <span class="badge bg-warning ms-1">Trocar Senha</span>
                         <?php endif; ?>
                     </a>
@@ -98,7 +98,7 @@
                             </span>
                         </li>
                         <li><hr class="dropdown-divider"></li>
-                        <?php if (isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria == 1): ?>
+                        <?php if (isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria === 1): ?>
                         <li>
                             <a class="dropdown-item text-warning" href="?page=trocar_senha">
                                 <i class="fas fa-exclamation-triangle me-1"></i>Trocar Senha
@@ -126,7 +126,7 @@
     </div>
 </nav>
 
-<?php if (isset($_SESSION['usuario']) && isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria == 1): ?>
+<?php if (isset($_SESSION['usuario']) && isset($_SESSION['usuario']->senha_temporaria) && $_SESSION['usuario']->senha_temporaria === 1): ?>
 <div class="alert alert-warning alert-dismissible fade show mb-0 text-center" role="alert">
     <i class="fas fa-exclamation-triangle me-2"></i>
     <strong>Alerta de Seguranca:</strong> Voce esta usando uma senha temporaria.

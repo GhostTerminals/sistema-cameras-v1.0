@@ -2,11 +2,21 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../config/app.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../inc/security.php';
-require_once __DIR__ . '/../inc/single_session.php';
-require_once __DIR__ . '/../src/ErrorHandler.php';
+if (file_exists(__DIR__ . '/../config/app.php')) {
+    require_once __DIR__ . '/../config/app.php';
+}
+if (file_exists(__DIR__ . '/../config/database.php')) {
+    require_once __DIR__ . '/../config/database.php';
+}
+if (file_exists(__DIR__ . '/../inc/security.php')) {
+    require_once __DIR__ . '/../inc/security.php';
+}
+if (file_exists(__DIR__ . '/../inc/single_session.php')) {
+    require_once __DIR__ . '/../inc/single_session.php';
+}
+if (file_exists(__DIR__ . '/../src/ErrorHandler.php')) {
+    require_once __DIR__ . '/../src/ErrorHandler.php';
+}
 
 registerGlobalErrorHandlers('api');
 

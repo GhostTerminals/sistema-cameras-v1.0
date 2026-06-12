@@ -67,6 +67,7 @@ class EquipamentoService
             'lpr_sentido_via' => trim((string)($data['lpr_sentido_via'] ?? '')) ?: null,
             'lpr_faixa_monitorada' => trim((string)($data['lpr_faixa_monitorada'] ?? '')) ?: null,
             'lpr_leitura_noturna' => !empty($data['lpr_leitura_noturna']) ? 1 : 0,
+            'lpr_url_acesso' => trim((string)($data['lpr_url_acesso'] ?? '')) ?: null,
             'dvr_modelo' => trim((string)($data['dvr_modelo'] ?? '')) ?: null,
             'dvr_canais' => max(0, (int)($data['dvr_canais'] ?? 0)) ?: null,
             'dvr_armazenamento_tb' => $this->parseDecimal($data['dvr_armazenamento_tb'] ?? null),
@@ -88,10 +89,14 @@ class EquipamentoService
     public function validateRequiredIds(array $data): void
     {
         $required = ['status_id', 'procedimento_id', 'regiao_id', 'tipo_id', 'secretaria_id', 'marca_id'];
+        $missing = [];
         foreach ($required as $field) {
-            if (empty($data[$field])) {
-                ApiResponse::error('VALIDATION_ERROR', "Campo obrigatório faltando: $field");
+            if (empty($data[$field]) || (int)$data[$field] < 1) {
+                $missing[] = $field;
             }
+        }
+        if (!empty($missing)) {
+            throw new RuntimeException('Campos obrigatórios faltando ou inválidos: ' . implode(', ', $missing));
         }
     }
 
@@ -325,6 +330,7 @@ class EquipamentoService
                     l.tem_alarme, l.alarme_conta,
                     elpr.sentido_via AS lpr_sentido_via,
                     elpr.faixa_monitorada AS lpr_faixa_monitorada,
+                    elpr.url_acesso AS lpr_url_acesso,
                     elpr.leitura_noturna AS lpr_leitura_noturna,
                     edvr.modelo AS dvr_modelo,
                     edvr.canais AS dvr_canais,
@@ -362,8 +368,8 @@ class EquipamentoService
 
         if ($tipoId === 2) {
             $result = $this->db->query(
-                "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, leitura_noturna) VALUES (?, ?, ?, ?)",
-                [$equipId, $fields['lpr_sentido_via'], $fields['lpr_faixa_monitorada'], $fields['lpr_leitura_noturna']]
+                    "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, url_acesso, leitura_noturna) VALUES (?, ?, ?, ?, ?)",
+                    [$equipId, $fields['lpr_sentido_via'], $fields['lpr_faixa_monitorada'], $fields['lpr_url_acesso'], $fields['lpr_leitura_noturna']]
             );
             if ($result['status'] !== 'success') {
                 throw new Exception('Erro ao salvar dados LPR.');
@@ -403,13 +409,14 @@ class EquipamentoService
 
         if ($tipoId === 2) {
             $this->db->query(
-                "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, leitura_noturna)
-                 VALUES (?, ?, ?, ?)
+                "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, url_acesso, leitura_noturna)
+                 VALUES (?, ?, ?, ?, ?)
                  ON DUPLICATE KEY UPDATE
                     sentido_via = VALUES(sentido_via),
                     faixa_monitorada = VALUES(faixa_monitorada),
+                    url_acesso = VALUES(url_acesso),
                     leitura_noturna = VALUES(leitura_noturna)",
-                [$equipId, $fields['lpr_sentido_via'], $fields['lpr_faixa_monitorada'], $fields['lpr_leitura_noturna']]
+                [$equipId, $fields['lpr_sentido_via'], $fields['lpr_faixa_monitorada'], $fields['lpr_url_acesso'], $fields['lpr_leitura_noturna']]
             );
         } elseif ($tipoId === 3) {
             $this->db->query(
@@ -462,6 +469,7 @@ class EquipamentoService
             'alarme_conta' => $fields['alarme_conta'],
             'lpr_sentido_via' => $fields['lpr_sentido_via'],
             'lpr_faixa_monitorada' => $fields['lpr_faixa_monitorada'],
+            'lpr_url_acesso' => $fields['lpr_url_acesso'],
             'lpr_leitura_noturna' => $fields['lpr_leitura_noturna'],
             'dvr_modelo' => $fields['dvr_modelo'],
             'dvr_canais' => $fields['dvr_canais'],

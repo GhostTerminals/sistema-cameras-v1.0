@@ -160,7 +160,7 @@ class EditarCamera {
             if (tipoId) {
                 qs.set('tipo_id', tipoId);
             }
-            const response = await fetch(`${window.APP_API_BASE}api_modelos_cameras&${qs.toString()}`);
+            const response = await fetchWithTimeout(`${window.APP_API_BASE}api_modelos_cameras&${qs.toString()}`);
             
             if (!response.ok) {
                 throw new Error(`Erro HTTP: ${response.status}`);
@@ -306,7 +306,7 @@ class EditarCamera {
         try {
             // USAR O ENDPOINT DE EDIÇÃO
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
-            const response = await fetch(`${window.APP_API_BASE}api_editar_camera`, {
+            const response = await fetchWithTimeout(`${window.APP_API_BASE}api_editar_camera`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -321,7 +321,6 @@ class EditarCamera {
             if (resultado.success === true) {
                 window.showToast(resultado.data?.message || resultado.message, 'success');
                 
-                this.form.reset();
                 this.form.classList.remove("was-validated");
                 
                 const fields = this.form.querySelectorAll('.is-valid, .is-invalid');
@@ -414,7 +413,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             qs.set('per_page', String(params.perPage));
         }
 
-        const response = await fetch(`${window.APP_API_BASE}api_cameras&${qs.toString()}`);
+        const response = await fetchWithTimeout(`${window.APP_API_BASE}api_cameras&${qs.toString()}`);
         const payload = await response.json();
         if (!response.ok || !payload.success) {
             throw new Error(payload.error || 'Erro ao carregar cameras');
@@ -492,6 +491,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Campos específicos por tipo
         setValue('lpr_sentido_via', camera.lpr_sentido_via ?? '');
         setValue('lpr_faixa_monitorada', camera.lpr_faixa_monitorada ?? '');
+        setValue('lpr_url_acesso', camera.lpr_url_acesso ?? '');
         setValue('dvr_modelo', camera.dvr_modelo ?? '');
         setValue('dvr_canais', camera.dvr_canais ?? '');
         setValue('dvr_armazenamento_tb', camera.dvr_armazenamento_tb ?? '');

@@ -4,19 +4,27 @@ require_once __DIR__ . '/../config/database.php';
 
 function getSessionClientIp(): string
 {
-    $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
-    if ($forwarded !== '') {
-        $ips = explode(',', $forwarded);
-        $first = trim($ips[0]);
-        if (filter_var($first, FILTER_VALIDATE_IP)) {
-            return $first;
+    $remoteAddr = trim($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+
+    if (defined('PROXY_TRUSTED_IPS') && PROXY_TRUSTED_IPS !== '') {
+        $trustedProxies = array_map('trim', explode(',', PROXY_TRUSTED_IPS));
+        if (in_array($remoteAddr, $trustedProxies, true)) {
+            $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+            if ($forwarded !== '') {
+                $ips = explode(',', $forwarded);
+                $last = trim(end($ips));
+                if (filter_var($last, FILTER_VALIDATE_IP)) {
+                    return $last;
+                }
+            }
+            $realIp = $_SERVER['HTTP_X_REAL_IP'] ?? '';
+            if ($realIp !== '' && filter_var($realIp, FILTER_VALIDATE_IP)) {
+                return $realIp;
+            }
         }
     }
-    $realIp = $_SERVER['HTTP_X_REAL_IP'] ?? '';
-    if ($realIp !== '' && filter_var($realIp, FILTER_VALIDATE_IP)) {
-        return $realIp;
-    }
-    return trim($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+
+    return $remoteAddr;
 }
 
 function getSessionUserAgent(): string
@@ -54,25 +62,37 @@ function registerUniqueSession(database $db, int $usuarioId, string $token): voi
 {
     ensureUserSessionsTable($db);
 
-    $db->query(
-        "INSERT INTO user_sessions (usuario_id, session_token_hash, session_id, ip_address, user_agent, active, last_seen)
-         VALUES (:usuario_id, :session_token_hash, :session_id, :ip_address, :user_agent, 1, NOW())
-         ON DUPLICATE KEY UPDATE
-             session_token_hash = VALUES(session_token_hash),
-             session_id = VALUES(session_id),
-             ip_address = VALUES(ip_address),
-             user_agent = VALUES(user_agent),
-             active = 1,
-             last_seen = NOW(),
-             updated_at = CURRENT_TIMESTAMP",
-        [
-            ':usuario_id' => $usuarioId,
-            ':session_token_hash' => hashSessionToken($token),
-            ':session_id' => session_id(),
-            ':ip_address' => getSessionClientIp(),
-            ':user_agent' => getSessionUserAgent(),
-        ]
-    );
+    $pdo = $db->getConnection();
+    $pdo->beginTransaction();
+    try {
+        $pdo->prepare(
+            "SELECT id FROM user_sessions WHERE usuario_id = ? FOR UPDATE"
+        )->execute([$usuarioId]);
+
+        $db->query(
+            "INSERT INTO user_sessions (usuario_id, session_token_hash, session_id, ip_address, user_agent, active, last_seen)
+             VALUES (:usuario_id, :session_token_hash, :session_id, :ip_address, :user_agent, 1, NOW())
+             ON DUPLICATE KEY UPDATE
+                 session_token_hash = VALUES(session_token_hash),
+                 session_id = VALUES(session_id),
+                 ip_address = VALUES(ip_address),
+                 user_agent = VALUES(user_agent),
+                 active = 1,
+                 last_seen = NOW(),
+                 updated_at = CURRENT_TIMESTAMP",
+            [
+                ':usuario_id' => $usuarioId,
+                ':session_token_hash' => hashSessionToken($token),
+                ':session_id' => session_id(),
+                ':ip_address' => getSessionClientIp(),
+                ':user_agent' => getSessionUserAgent(),
+            ]
+        );
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
 }
 
 function invalidateUniqueSession(database $db, int $usuarioId, ?string $token = null): void
@@ -108,9 +128,10 @@ function isUniqueSessionValid(database $db, int $usuarioId, ?string $token): boo
 
     ensureUserSessionsTable($db);
     $result = $db->query(
-        "SELECT session_token_hash, session_id, active
+        "SELECT session_token_hash, session_id, active, last_seen
          FROM user_sessions
          WHERE usuario_id = :usuario_id
+           AND active = 1
          LIMIT 1",
         [':usuario_id' => $usuarioId]
     );
@@ -128,24 +149,31 @@ function isUniqueSessionValid(database $db, int $usuarioId, ?string $token): boo
         return false;
     }
 
-    $db->query(
-        "UPDATE user_sessions
-         SET session_id = :session_id,
-             ip_address = :ip_address,
-             user_agent = :user_agent,
-             last_seen = NOW(),
-             updated_at = CURRENT_TIMESTAMP
-         WHERE usuario_id = :usuario_id
-           AND session_token_hash = :session_token_hash
-           AND active = 1",
-        [
-            ':session_id' => session_id(),
-            ':ip_address' => getSessionClientIp(),
-            ':user_agent' => getSessionUserAgent(),
-            ':usuario_id' => $usuarioId,
-            ':session_token_hash' => hashSessionToken($token),
-        ]
-    );
+    // Atualizar last_seen apenas a cada 5 minutos para reduzir write amplification
+    $lastSeen = $row->last_seen ?? null;
+    $touchInterval = 300;
+    $shouldTouch = $lastSeen === null || (time() - strtotime((string)$lastSeen)) > $touchInterval;
+
+    if ($shouldTouch) {
+        $db->query(
+            "UPDATE user_sessions
+             SET session_id = :session_id,
+                 ip_address = :ip_address,
+                 user_agent = :user_agent,
+                 last_seen = NOW(),
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE usuario_id = :usuario_id
+               AND session_token_hash = :session_token_hash
+               AND active = 1",
+            [
+                ':session_id' => session_id(),
+                ':ip_address' => getSessionClientIp(),
+                ':user_agent' => getSessionUserAgent(),
+                ':usuario_id' => $usuarioId,
+                ':session_token_hash' => hashSessionToken($token),
+            ]
+        );
+    }
 
     return true;
 }

@@ -95,7 +95,7 @@
     params.set('per_page', '10');
     params.set('include_lists', '1');
 
-    const response = await fetch(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
+    const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
       cache: 'no-store'
@@ -199,7 +199,7 @@
         qs.set('busca', term);
       }
 
-      const response = await fetch(`${getApiBase()}api_cameras&${qs.toString()}`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_cameras&${qs.toString()}`, {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin',
         cache: 'no-store'
@@ -463,7 +463,7 @@
     };
 
     try {
-      const response = await fetch(`${getApiBase()}api_manutencao_cameras`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -585,7 +585,7 @@
     params.set('sort_dir', state.historicoSortDir);
     params.set('_t', String(Date.now()));
 
-    const response = await fetch(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
+    const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
       cache: 'no-store'
@@ -660,7 +660,7 @@
       params.set('sort_dir', state.historicoSortDir);
       params.set('_t', String(Date.now()));
 
-      const response = await fetch(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras&${params.toString()}`, {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin',
         cache: 'no-store'
@@ -836,7 +836,7 @@
       button.disabled = true;
       button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Criando...';
 
-      const response = await fetch(`${getApiBase()}api_manutencao_cameras`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -909,7 +909,7 @@
       button.disabled = true;
       button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Salvando...';
 
-      const response = await fetch(`${getApiBase()}api_manutencao_cameras`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_cameras`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

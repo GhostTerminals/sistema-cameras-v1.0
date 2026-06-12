@@ -60,7 +60,7 @@
 
         listEl.innerHTML = '<div class="text-center py-3"><div class="spinner-border spinner-border-sm text-primary" role="status"><span class="visually-hidden">Carregando...</span></div></div>'
 
-        fetch(LIST_URL + '&' + params, {
+        fetchWithTimeout(LIST_URL + '&' + params, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
             .then(function (r) { return r.json() })
@@ -150,7 +150,7 @@
 
     function excluirAnexo(anexoId) {
         var csrf = getCsrf()
-        return fetch(DELETE_URL, {
+        return fetchWithTimeout(DELETE_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

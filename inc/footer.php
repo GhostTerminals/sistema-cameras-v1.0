@@ -267,6 +267,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
             handleUserActivity();
+            startSessionCheck();
+        } else {
+            stopSessionCheck();
         }
     });
 
@@ -275,9 +278,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startMainTimer();
 
-    // Sincronizacao periodica
-    setInterval(() => {
-        fetch(BASE_URL + 'index.php?page=api/session_check', {
+    var sessionCheckInterval = null;
+
+    function startSessionCheck() {
+        if (sessionCheckInterval) return;
+        sessionCheckInterval = setInterval(function() {
+            fetch(BASE_URL + 'index.php?page=api/session_check', {
                 credentials: 'same-origin'
             })
             .then(res => {
@@ -295,7 +301,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(() => {});
-    }, 30000);
+        }, 30000);
+    }
+
+    function stopSessionCheck() {
+        if (sessionCheckInterval) {
+            clearInterval(sessionCheckInterval);
+            sessionCheckInterval = null;
+        }
+    }
+
+    startSessionCheck();
 });
 </script>
 

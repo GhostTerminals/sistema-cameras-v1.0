@@ -43,6 +43,12 @@ class RequestValidator
         $this->data = $data;
     }
 
+    public function addValidator(string $name, callable $callback): self
+    {
+        $this->customValidators[$name] = $callback;
+        return $this;
+    }
+
     /**
      * Valida dados contra schema de regras
      * 
@@ -116,8 +122,10 @@ class RequestValidator
             return true;
         }
 
-        // Regra desconhecida
-        return true;
+        // Regra desconhecida - falhar com erro
+        error_log("RequestValidator: regra desconhecida '{$ruleName}' para campo '{$field}'");
+        $this->addError($field, $ruleName, $params);
+        return false;
     }
 
     /**
@@ -152,7 +160,7 @@ class RequestValidator
      */
     private function validateInteger(string $field, $value): bool
     {
-        return is_int($value) || (is_string($value) && ctype_digit($value));
+        return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
 
     /**
@@ -275,7 +283,7 @@ class RequestValidator
             return true;
         }
         $length = (int)$params[0];
-        return strlen((string)$value) === $length;
+        return mb_strlen((string)$value) === $length;
     }
 
     /**
@@ -292,7 +300,7 @@ class RequestValidator
             return $value >= $min;
         }
 
-        return strlen((string)$value) >= $min;
+        return mb_strlen((string)$value) >= $min;
     }
 
     /**
@@ -309,7 +317,7 @@ class RequestValidator
             return $value <= $max;
         }
 
-        return strlen((string)$value) <= $max;
+        return mb_strlen((string)$value) <= $max;
     }
 
     /**
@@ -336,7 +344,18 @@ class RequestValidator
         if (!isset($params[0])) {
             return true;
         }
-        return preg_match($params[0], $value) === 1;
+        try {
+            $result = preg_match($params[0], $value);
+            if ($result === false) {
+                $errorCode = preg_last_error();
+                error_log("RequestValidator: regex error (code $errorCode) for field '$field'");
+                return false;
+            }
+            return $result === 1;
+        } catch (Throwable $e) {
+            error_log("RequestValidator: regex exception for field '$field': " . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -470,30 +489,31 @@ class RequestValidator
      */
     private function getDefaultMessage(string $rule, string $field, array $params = []): string
     {
+        $safeField = htmlspecialchars($field, ENT_QUOTES, 'UTF-8');
         $messages = [
-            'required' => "O campo '{$field}' é obrigatório",
-            'string' => "O campo '{$field}' deve ser texto",
-            'numeric' => "O campo '{$field}' deve ser numérico",
-            'integer' => "O campo '{$field}' deve ser inteiro",
-            'float' => "O campo '{$field}' deve ser decimal",
-            'boolean' => "O campo '{$field}' deve ser booleano",
-            'array' => "O campo '{$field}' deve ser um array",
-            'email' => "O campo '{$field}' deve ser email válido",
-            'url' => "O campo '{$field}' deve ser URL válida",
-            'ip' => "O campo '{$field}' deve ser IP válido",
-            'uuid' => "O campo '{$field}' deve ser UUID válido",
-            'date' => "O campo '{$field}' deve ser data válida",
-            'json' => "O campo '{$field}' deve ser JSON válido",
-            'cpf' => "O campo '{$field}' deve ser CPF válido",
-            'cnpj' => "O campo '{$field}' deve ser CNPJ válido",
-            'min' => "O campo '{$field}' deve ter mínimo " . ($params[0] ?? '0') . " caracteres",
-            'max' => "O campo '{$field}' deve ter máximo " . ($params[0] ?? 'Infinito') . " caracteres",
-            'length' => "O campo '{$field}' deve ter exatamente " . ($params[0] ?? '0') . " caracteres",
-            'in' => "O campo '{$field}' deve ser um dos valores válidos",
-            'regex' => "O campo '{$field}' não atende ao formato esperado",
+            'required' => "O campo '{$safeField}' é obrigatório",
+            'string' => "O campo '{$safeField}' deve ser texto",
+            'numeric' => "O campo '{$safeField}' deve ser numérico",
+            'integer' => "O campo '{$safeField}' deve ser inteiro",
+            'float' => "O campo '{$safeField}' deve ser decimal",
+            'boolean' => "O campo '{$safeField}' deve ser booleano",
+            'array' => "O campo '{$safeField}' deve ser um array",
+            'email' => "O campo '{$safeField}' deve ser email válido",
+            'url' => "O campo '{$safeField}' deve ser URL válida",
+            'ip' => "O campo '{$safeField}' deve ser IP válido",
+            'uuid' => "O campo '{$safeField}' deve ser UUID válido",
+            'date' => "O campo '{$safeField}' deve ser data válida",
+            'json' => "O campo '{$safeField}' deve ser JSON válido",
+            'cpf' => "O campo '{$safeField}' deve ser CPF válido",
+            'cnpj' => "O campo '{$safeField}' deve ser CNPJ válido",
+            'min' => "O campo '{$safeField}' deve ter mínimo " . ($params[0] ?? '0') . " caracteres",
+            'max' => "O campo '{$safeField}' deve ter máximo " . ($params[0] ?? 'Infinito') . " caracteres",
+            'length' => "O campo '{$safeField}' deve ter exatamente " . ($params[0] ?? '0') . " caracteres",
+            'in' => "O campo '{$safeField}' deve ser um dos valores válidos",
+            'regex' => "O campo '{$safeField}' não atende ao formato esperado",
         ];
 
-        return $messages[$rule] ?? "O campo '{$field}' não passou na validação '{$rule}'";
+        return $messages[$rule] ?? "O campo '{$safeField}' não passou na validação '{$rule}'";
     }
 
     /**

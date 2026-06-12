@@ -103,7 +103,7 @@
     const select = document.getElementById('alarmeSelector');
     if (select) select.innerHTML = '<option value="">Carregando alarmes...</option>';
 
-    const response = await fetch(`${getApiBase()}api_alarmes&per_page=100${extraParams}`, { credentials: 'same-origin' });
+    const response = await fetchWithTimeout(`${getApiBase()}api_alarmes&per_page=100${extraParams}`, { credentials: 'same-origin' });
     const payload = await response.json();
     if (!response.ok || !payload.success) {
       throw new Error(payload.error || 'Erro ao carregar alarmes.');
@@ -136,7 +136,7 @@
     try {
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>Salvando...';
-      const response = await fetch(`${getApiBase()}api_editar_alarme`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_editar_alarme`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

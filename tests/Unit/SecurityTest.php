@@ -66,10 +66,28 @@ class SecurityTest extends TestCase
     public function testPasswordPolicyValid(): void
     {
         $errors = [];
-        $result = validatePasswordPolicy('123456', $errors);
+        $result = validatePasswordPolicy('MySecure1', $errors);
 
         $this->assertTrue($result);
         $this->assertEmpty($errors);
+    }
+
+    public function testPasswordPolicyNumericOnlyFails(): void
+    {
+        $errors = [];
+        $result = validatePasswordPolicy('12345678', $errors);
+
+        $this->assertFalse($result);
+        $this->assertNotEmpty($errors);
+    }
+
+    public function testPasswordPolicyShortFails(): void
+    {
+        $errors = [];
+        $result = validatePasswordPolicy('Ab1', $errors);
+
+        $this->assertFalse($result);
+        $this->assertNotEmpty($errors);
     }
 
     public function testGenerateCsrfToken(): void
@@ -111,10 +129,12 @@ class SecurityTest extends TestCase
 
     public function testGenerateTemporaryPassword(): void
     {
-        $password = generateTemporaryPassword(6);
+        $password = generateTemporaryPassword(12);
 
-        $this->assertEquals(6, strlen($password));
-        $this->assertMatchesRegularExpression('/^\d+$/', $password);
+        $this->assertEquals(12, strlen($password));
+        $this->assertMatchesRegularExpression('/^[a-zA-Z0-9!@#$%&]+$/', $password);
+        $this->assertMatchesRegularExpression('/[a-zA-Z]/', $password, 'Deve conter letras');
+        $this->assertMatchesRegularExpression('/[0-9]/', $password, 'Deve conter numeros');
     }
 
     public function testDifferentPasswordsDifferentHashes(): void

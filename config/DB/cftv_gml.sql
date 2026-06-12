@@ -380,7 +380,6 @@ CREATE TABLE equipamentos (
     numero_serie VARCHAR(150) NULL COMMENT 'Número de série do fabricante',
     ip VARCHAR(45) NULL,
     porta INT NULL,
-    url_acesso VARCHAR(2083) NULL,
     transmissao_id INT NULL,
     origem_link_id INT NULL,
     inscricao VARCHAR(20) NULL COMMENT 'Inscricao do link/operadora',
@@ -451,6 +450,7 @@ CREATE TABLE equipamentos_lpr (
     equipamento_id BIGINT UNSIGNED PRIMARY KEY,
     sentido_via VARCHAR(50) NULL,
     faixa_monitorada VARCHAR(50) NULL,
+    url_acesso VARCHAR(2083) NULL,
     leitura_noturna TINYINT(1) NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -794,7 +794,6 @@ BEGIN
             'numero_serie', NEW.numero_serie,
             'ip', NEW.ip,
             'porta', NEW.porta,
-            'url_acesso', NEW.url_acesso,
             'transmissao_id', NEW.transmissao_id,
             'origem_link_id', NEW.origem_link_id,
             'data_instalacao', NEW.data_instalacao,
@@ -828,7 +827,6 @@ BEGIN
             'numero_serie', OLD.numero_serie,
             'ip', OLD.ip,
             'porta', OLD.porta,
-            'url_acesso', OLD.url_acesso,
             'transmissao_id', OLD.transmissao_id,
             'origem_link_id', OLD.origem_link_id,
             'data_instalacao', OLD.data_instalacao,
@@ -847,7 +845,6 @@ BEGIN
             'numero_serie', NEW.numero_serie,
             'ip', NEW.ip,
             'porta', NEW.porta,
-            'url_acesso', NEW.url_acesso,
             'transmissao_id', NEW.transmissao_id,
             'origem_link_id', NEW.origem_link_id,
             'data_instalacao', NEW.data_instalacao,
@@ -886,7 +883,6 @@ BEGIN
             'numero_serie', OLD.numero_serie,
             'ip', OLD.ip,
             'porta', OLD.porta,
-            'url_acesso', OLD.url_acesso,
             'transmissao_id', OLD.transmissao_id,
             'origem_link_id', OLD.origem_link_id,
             'data_instalacao', OLD.data_instalacao,
@@ -1071,7 +1067,7 @@ SELECT
     cm.nome AS modelo,
     e.ip,
     e.porta,
-    e.url_acesso,
+    el.url_acesso,
     e.patrimonio,
     e.numero_serie,
     tr.tipo AS tipo_transmissao,
@@ -1091,6 +1087,7 @@ LEFT JOIN tipos_locais tl ON tl.id = l.tipo_local_id
 LEFT JOIN classificacao_enderecos ce ON ce.id = l.classificacao_endereco_id
 LEFT JOIN marcas m ON m.id = e.marca_id
 LEFT JOIN catalogo_modelos cm ON cm.id = e.modelo_id
+LEFT JOIN equipamentos_lpr el ON el.equipamento_id = e.id
 LEFT JOIN transmissoes tr ON tr.id = e.transmissao_id
 LEFT JOIN origem_link ol ON ol.id = e.origem_link_id
 WHERE e.deleted_at IS NULL; -- filtrar soft delete

@@ -5,6 +5,15 @@ try {
         ApiResponse::error('BAD_REQUEST', 'Apenas GET e permitido', [], 405);
     }
 
+    configureSessionSecurity();
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['usuario'])) {
+        ApiResponse::unauthorized('Autenticacao necessaria para acessar anexos.');
+    }
+
     $id = isset($_GET['id']) ? max(1, (int)$_GET['id']) : 0;
     if (!$id) {
         ApiResponse::error('VALIDATION_ERROR', 'ID do anexo nao informado.');
@@ -54,7 +63,7 @@ try {
     header_remove('Content-Type');
     header('Content-Type: ' . $mimeType);
     $filenameSanitized = preg_replace('/[\x00-\x1F\x7F<>"\/\\\\|:?*]/', '', $nomeOriginal);
-    header('Content-Disposition: inline; filename="' . $filenameSanitized . '"');
+    header('Content-Disposition: attachment; filename="' . $filenameSanitized . '"');
     header('Content-Length: ' . $tamanho);
     header('Cache-Control: private, max-age=3600');
     header('X-Content-Type-Options: nosniff');

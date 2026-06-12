@@ -111,7 +111,7 @@
 
     try {
       const query = buildQuery();
-      const response = await fetch(`${getApiBase()}api_auditoria_cameras&${query}`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_auditoria_cameras&${query}`, {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin'
       });

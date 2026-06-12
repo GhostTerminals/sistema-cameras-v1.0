@@ -236,7 +236,7 @@ class CadastroCamera {
             if (tipoId) {
                 qs.set('tipo_id', tipoId);
             }
-            const response = await fetch(`${window.APP_API_BASE}api_modelos_cameras&${qs.toString()}`, {
+            const response = await fetchWithTimeout(`${window.APP_API_BASE}api_modelos_cameras&${qs.toString()}`, {
                 credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json'
@@ -382,7 +382,7 @@ class CadastroCamera {
 
         this.showLoading(true);
         try {
-            const response = await fetch(`${window.APP_API_BASE}api_cep_lookup&cep=${encodeURIComponent(cep)}`, {
+            const response = await fetchWithTimeout(`${window.APP_API_BASE}api_cep_lookup&cep=${encodeURIComponent(cep)}`, {
                 credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json'
@@ -468,7 +468,7 @@ class CadastroCamera {
 
         this.showLoading(true);
         try {
-            const response = await fetch(requestUrl, {
+            const response = await fetchWithTimeout(requestUrl, {
                 credentials: 'same-origin',
                 headers: {
                     'Accept': 'application/json'
@@ -653,8 +653,14 @@ class CadastroCamera {
         this.showLoading(true);
 
         try {
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
-            const response = await fetch(`${window.APP_API_BASE}api_cadastrar_cameras`, {
+            const metaTag = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = metaTag ? metaTag.getAttribute("content") : "";
+            if (!csrfToken) {
+                this.showLoading(false);
+                showToast('Erro: token CSRF ausente. Recarregue a página.', 'error');
+                return;
+            }
+            const response = await fetchWithTimeout(`${window.APP_API_BASE}api_cadastrar_cameras`, {
                 method: "POST",
                 credentials: 'same-origin',
                 headers: {

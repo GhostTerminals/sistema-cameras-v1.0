@@ -975,6 +975,12 @@ select[multiple] option:checked {
   background: #2980b9;
 }
 
+/* Firefox scrollbar fallback */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary-color) #f1f1f1;
+}
+
 /* ===== ESTILOS PARA PRINT ===== */
 @media print {
   .no-print {

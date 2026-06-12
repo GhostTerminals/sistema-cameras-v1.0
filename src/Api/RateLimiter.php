@@ -3,7 +3,6 @@
 class RateLimiter
 {
     private const STORAGE_DIR = 'ratelimit';
-    private const DEFAULT_CLEANUP_PROBABILITY = 0.01;
 
     private string $storagePath;
     private string $strategy;
@@ -21,10 +20,6 @@ class RateLimiter
 
         if (!is_dir($this->storagePath)) {
             mkdir($this->storagePath, 0755, true);
-        }
-
-        if (mt_rand(1, 100) / 100 <= self::DEFAULT_CLEANUP_PROBABILITY) {
-            $this->cleanup();
         }
     }
 
@@ -106,7 +101,9 @@ class RateLimiter
 
         if (php_sapi_name() !== 'cli' && !headers_sent()) {
             foreach ($headers as $name => $value) {
-                header("{$name}: {$value}");
+                $safeName = str_replace(["\r", "\n"], '', $name);
+                $safeValue = str_replace(["\r", "\n"], '', $value);
+                header("{$safeName}: {$safeValue}");
             }
         }
         return $allowed;
@@ -190,14 +187,27 @@ class RateLimiter
         if ($this->useDb === false) return false;
         if ($this->useDb === true) return true;
 
+        static $cached = [];
+        $cacheKey = spl_object_id($this);
+        if (isset($cached[$cacheKey])) {
+            $this->useDb = $cached[$cacheKey];
+            return $this->useDb;
+        }
+
         try {
             $pdo = db()->getConnection();
-            if ($pdo === null) return false;
+            if ($pdo === null) {
+                $this->useDb = false;
+                $cached[$cacheKey] = false;
+                return false;
+            }
             $stmt = $pdo->query("SELECT 1 FROM rate_limits LIMIT 1");
             $this->useDb = true;
+            $cached[$cacheKey] = true;
             return true;
         } catch (Throwable $e) {
             $this->useDb = false;
+            $cached[$cacheKey] = false;
             return false;
         }
     }
@@ -223,16 +233,24 @@ class RateLimiter
     {
         try {
             $stmt = db()->getConnection()->prepare(
-                "SELECT `key`, tokens, updated_at FROM rate_limits WHERE `key` = ?"
+                "SELECT `key`, tokens, updated_at, timestamps FROM rate_limits WHERE `key` = ?"
             );
             $stmt->execute([hash('sha256', $key)]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) return null;
 
+            $timestamps = [];
+            if (!empty($row['timestamps'])) {
+                $decoded = json_decode($row['timestamps'], true);
+                if (is_array($decoded)) {
+                    $timestamps = $decoded;
+                }
+            }
+
             return [
                 'tokens' => (float)$row['tokens'],
                 'updated_at' => (int)$row['updated_at'],
-                'timestamps' => [],
+                'timestamps' => $timestamps,
             ];
         } catch (Throwable $e) {
             error_log('[RateLimiter] DB read error: ' . $e->getMessage());
@@ -248,21 +266,14 @@ class RateLimiter
             $tokens = $data['tokens'] ?? 0;
             $updatedAt = $data['updated_at'] ?? time();
             $timestamps = $data['timestamps'] ?? [];
+            $timestampsJson = !empty($timestamps) ? json_encode($timestamps) : null;
 
             $pdo = db()->getConnection();
 
-            if ($this->strategy === 'sliding_window' && !empty($timestamps)) {
-                $payload = json_encode($timestamps);
-                $pdo->prepare(
-                    "INSERT INTO rate_limits (`key`, tokens, updated_at) VALUES (?, 0, ?)
-                     ON DUPLICATE KEY UPDATE tokens = VALUES(tokens), updated_at = VALUES(updated_at)"
-                )->execute([$hash, $updatedAt]);
-            } else {
-                $pdo->prepare(
-                    "INSERT INTO rate_limits (`key`, tokens, updated_at) VALUES (?, ?, ?)
-                     ON DUPLICATE KEY UPDATE tokens = VALUES(tokens), updated_at = VALUES(updated_at)"
-                )->execute([$hash, $tokens, $updatedAt]);
-            }
+            $pdo->prepare(
+                "INSERT INTO rate_limits (`key`, tokens, updated_at, timestamps) VALUES (?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE tokens = VALUES(tokens), updated_at = VALUES(updated_at), timestamps = VALUES(timestamps)"
+            )->execute([$hash, $tokens, $updatedAt, $timestampsJson]);
         } catch (Throwable $e) {
             error_log('[RateLimiter] DB write error: ' . $e->getMessage());
             $this->useDb = false;
@@ -275,7 +286,18 @@ class RateLimiter
         $file = $this->getFilePath($key);
         if (!file_exists($file)) return null;
 
-        $content = file_get_contents($file);
+        $fp = @fopen($file, 'r');
+        if (!$fp) return null;
+
+        if (!flock($fp, LOCK_SH)) {
+            fclose($fp);
+            return null;
+        }
+
+        $content = stream_get_contents($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
         if ($content === false) return null;
 
         $data = json_decode($content, true);
@@ -288,10 +310,20 @@ class RateLimiter
         $content = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($content === false) return;
 
-        $tmp = $file . '.tmp.' . getmypid();
-        if (file_put_contents($tmp, $content, LOCK_EX) !== false) {
-            rename($tmp, $file);
+        $fp = @fopen($file, 'c+');
+        if (!$fp) return;
+
+        if (!flock($fp, LOCK_EX)) {
+            fclose($fp);
+            return;
         }
+
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, $content);
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 
     private function getFilePath(string $key): string

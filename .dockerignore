@@ -12,6 +12,7 @@
 .idea
 *.swp
 *.swo
+*.sublime-*
 
 # OS
 .DS_Store
@@ -24,9 +25,8 @@ docker-compose*.yml
 # Docs & specs (not needed in image)
 docs/
 specs/
-final.md
-INSTALL.md
-ANCH_SUMMARY.md
+*.md
+!README.md
 
 # Tests (not needed in production image)
 tests/
@@ -40,3 +40,13 @@ package-lock.json
 tmp/
 temp/
 *.log
+
+# SQL dumps
+*.sql
+
+# SSL/TLS certs
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx

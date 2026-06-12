@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
         $erro = 'Falha de validacao CSRF.';
     } else {
         $rateLimitPassed = true;
-        if (class_exists('RateLimiter', false)) {
+        if (class_exists('RateLimiter', true)) {
             $rateLimiter = new RateLimiter();
             $rateLimitKey = 'recuperar_senha:' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
             if (!$rateLimiter->consume($rateLimitKey, 3, 900)) {
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
                             'motivo' => 'recuperacao_de_senha'
                         ], 'web');
 
-                        $_SESSION['sucesso_recuperar'] = $novaSenha;
+                        $_SESSION['sucesso_recuperar'] = 'Senha temporaria gerada e registrada no sistema. O usuario devera usa-la para fazer login e sera forcado a criar uma nova senha.';
                         header('Location: ?page=recuperar_senha');
                         exit;
                     } else {
@@ -65,18 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 }
 ?>
 <style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
-.pass-box {
-    background: #1a1a2e;
-    color: #f0e68c;
-    font-family: monospace;
-    font-size: 1.3rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-    padding: 12px 16px;
-    border-radius: 8px;
-    text-align: center;
-    user-select: all;
-}
 </style>
 
 <div class="container mt-4">
@@ -90,15 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
 
         <?php if ($sucesso): ?>
         <div class="alert alert-success">
-            <i class="fas fa-check-circle me-2"></i>Senha temporaria gerada com sucesso!
+            <i class="fas fa-check-circle me-2"></i><?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?>
         </div>
         <div class="mb-3">
-            <label class="form-label fw-bold">Nova senha temporaria do usuario:</label>
-            <div class="pass-box"><?= htmlspecialchars($sucesso, ENT_QUOTES, 'UTF-8') ?></div>
-            <div class="form-text mt-2">
+            <div class="form-text">
                 <i class="fas fa-info-circle me-1"></i>
-                Copie esta senha agora. Por seguranca, ela nao sera exibida novamente.
-                O usuario devera usar esta senha para fazer login e sera forcado a criar uma nova.
+                A senha temporaria foi registrada com seguranca. O usuario devera usa-la para fazer login e sera forcado a criar uma nova senha no primeiro acesso.
             </div>
         </div>
         <a href="?page=recuperar_senha" class="btn btn-primary">
@@ -121,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
             <div class="mb-3">
                 <label for="text_usuario" class="form-label">Nome de Usuario</label>
                 <input type="text" name="text_usuario" id="text_usuario" class="form-control" required autofocus>
-                <div class="form-text">Informe o nome do usuario para gerar uma nova senha temporaria de 6 digitos numericos.</div>
+                <div class="form-text">Informe o nome do usuario para gerar uma nova senha temporaria segura.</div>
             </div>
             <div class="d-grid gap-2">
                 <button type="submit" name="submit" class="btn btn-primary">

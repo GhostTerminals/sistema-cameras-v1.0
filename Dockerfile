@@ -1,4 +1,4 @@
-FROM php:8.1-apache AS base
+FROM php:8.3-apache AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev libjpeg-dev libfreetype6-dev libicu-dev libzip-dev curl libonig-dev \
@@ -27,7 +27,13 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN echo "memory_limit = 256M" >> "$PHP_INI_DIR/conf.d/memory.ini" && \
     echo "max_execution_time = 300" >> "$PHP_INI_DIR/conf.d/timeout.ini" && \
     echo "upload_max_filesize = 20M" >> "$PHP_INI_DIR/conf.d/upload.ini" && \
-    echo "post_max_size = 24M" >> "$PHP_INI_DIR/conf.d/upload.ini"
+    echo "post_max_size = 24M" >> "$PHP_INI_DIR/conf.d/upload.ini" && \
+    echo "expose_php = Off" >> /usr/local/etc/php/conf.d/security.ini && \
+    echo "allow_url_fopen = Off" >> /usr/local/etc/php/conf.d/security.ini && \
+    echo "allow_url_include = Off" >> /usr/local/etc/php/conf.d/security.ini && \
+    echo "session.cookie_secure = 1" >> /usr/local/etc/php/conf.d/security.ini && \
+    echo "session.cookie_httponly = 1" >> /usr/local/etc/php/conf.d/security.ini && \
+    echo "session.use_strict_mode = 1" >> /usr/local/etc/php/conf.d/security.ini
 
 COPY api/ /var/www/html/api/
 COPY accounts/ /var/www/html/accounts/
@@ -43,8 +49,7 @@ COPY composer.json composer.lock /var/www/html/
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader --working-dir=/var/www/html
 
-RUN rm -f /var/www/html/.env && \
-    chown -R www-data:www-data /var/www/html && \
+RUN chown -R www-data:www-data /var/www/html && \
     find /var/www/html -type d -exec chmod 755 {} \; && \
     find /var/www/html -type f -exec chmod 644 {} \;
 

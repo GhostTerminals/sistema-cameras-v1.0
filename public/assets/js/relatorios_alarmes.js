@@ -77,7 +77,7 @@ $(document).ready(function () {
       const queryString = construirQueryString(filtros, pagina);
       const url = queryString ? `${apiUrl}&${queryString}` : apiUrl;
 
-      const response = await fetch(url, {
+      const response = await fetchWithTimeout(url, {
         credentials: 'same-origin',
         headers: {
           'X-Requested-With': 'XMLHttpRequest'

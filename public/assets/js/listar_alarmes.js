@@ -52,7 +52,7 @@ async function carregarListaAlarmes(page = 1) {
         `;
 
         const params = buildQueryParams(page);
-        const response = await fetch(`${API_URL}&${params.toString()}`);
+        const response = await fetchWithTimeout(`${API_URL}&${params.toString()}`);
 
         if (!response.ok) {
             throw new Error(`Erro HTTP: ${response.status}`);

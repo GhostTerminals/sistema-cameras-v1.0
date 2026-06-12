@@ -289,7 +289,7 @@ class ApiResponse
     private static function getMeta(): array
     {
         return [
-            'timestamp' => date('Y-m-d\TH:i:s\Z'),
+            'timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
             'version' => 'v2',
             'request_id' => self::getRequestId(),
             'timezone' => date_default_timezone_get()

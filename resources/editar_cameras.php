@@ -372,6 +372,10 @@ try {
                                         <label class="form-check-label" for="editLprLeituraNoturna">Leitura Noturna</label>
                                     </div>
                                 </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">URL de Acesso</label>
+                                    <input type="url" name="lpr_url_acesso" class="form-control" maxlength="2083" placeholder="https://...">
+                                </div>
                             </div>
                             </div></div>
 

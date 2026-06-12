@@ -3,7 +3,7 @@ services:
     build: .
     container_name: cameras-app
     ports:
-      - "80:80"
+      - "127.0.0.1:8080:80"
     environment:
       - CAMERAS_ENV=production
       - DB_HOST=db
@@ -20,6 +20,11 @@ services:
     networks:
       - internal
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/index.php?page=api/api_ping"]
       interval: 30s
@@ -28,7 +33,7 @@ services:
       start_period: 15s
 
   db:
-    image: mysql:8.0
+    image: mysql:8.0.40
     container_name: cameras-db
     volumes:
       - mysql_data:/var/lib/mysql
@@ -41,6 +46,11 @@ services:
     networks:
       - internal
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s

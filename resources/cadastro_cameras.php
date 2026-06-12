@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../inc/navbar.php';
 
 // Verificar permissões
-if (!isset($_SESSION['usuario']) || !in_array($_SESSION['usuario']->nivel_acesso ?? '', ['admin', 'supervisor'], true)) {
+if (!in_array($_SESSION['usuario']->nivel_acesso ?? '', ['admin', 'supervisor'], true)) {
     header('Location: index.php?page=nao_autorizado');
     exit;
 }
@@ -356,6 +356,12 @@ unset($_SESSION['form_data']);
                                             Leitura Noturna
                                         </label>
                                     </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">URL de Acesso</label>
+                                    <input type="url" name="lpr_url_acesso" class="form-control"
+                                        value="<?= htmlspecialchars($formData['lpr_url_acesso'] ?? '') ?>"
+                                        maxlength="2083" placeholder="https://...">
                                 </div>
                             </div>
                         </div></div>

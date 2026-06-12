@@ -96,7 +96,7 @@
         qs.set('busca', term);
       }
 
-      const response = await fetch(`${getApiBase()}api_alarmes&${qs.toString()}`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_alarmes&${qs.toString()}`, {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin',
         cache: 'no-store'
@@ -346,7 +346,7 @@
       btn.disabled = true;
       showLoading('Criando ordem de serviço...');
 
-      const response = await fetch(`${getApiBase()}api_manutencao_alarmes`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -404,7 +404,7 @@
       params.set('sort_dir', state.historicoSortDir);
       params.set('_t', String(Date.now()));
 
-      const response = await fetch(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin',
         cache: 'no-store'
@@ -652,7 +652,7 @@
 
     try {
       showLoading('Iniciando execução...');
-      const response = await fetch(`${getApiBase()}api_manutencao_alarmes`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -710,7 +710,7 @@
       btn.disabled = true;
       showLoading('Finalizando ordem de serviço...');
 
-      const response = await fetch(`${getApiBase()}api_manutencao_alarmes`, {
+      const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -906,7 +906,7 @@
     params.set('per_page', '10');
     params.set('include_lists', '1');
 
-    const response = await fetch(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
+    const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
       cache: 'no-store'
@@ -966,7 +966,7 @@
     params.set('sort_dir', state.historicoSortDir);
     params.set('_t', String(Date.now()));
 
-    const response = await fetch(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
+    const response = await fetchWithTimeout(`${getApiBase()}api_manutencao_alarmes&${params.toString()}`, {
       headers: { Accept: 'application/json' },
       credentials: 'same-origin',
       cache: 'no-store'

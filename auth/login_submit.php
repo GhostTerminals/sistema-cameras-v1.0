@@ -21,16 +21,26 @@ if(!$usuario || !$senha) {
 }
 
 $now = time();
-$forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
-if ($forwarded !== '') {
-    $ips = explode(',', $forwarded);
-    $first = trim($ips[0]);
-    $ip = filter_var($first, FILTER_VALIDATE_IP) ? $first : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+
+if (defined('PROXY_TRUSTED_IPS') && PROXY_TRUSTED_IPS !== '') {
+    $trustedProxies = array_map('trim', explode(',', PROXY_TRUSTED_IPS));
+    if (in_array($remoteAddr, $trustedProxies, true)) {
+        $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+        if ($forwarded !== '') {
+            $ips = explode(',', $forwarded);
+            $last = trim(end($ips));
+            $ip = filter_var($last, FILTER_VALIDATE_IP) ? $last : $remoteAddr;
+        } else {
+            $ip = $remoteAddr;
+        }
+    } else {
+        $ip = $remoteAddr;
+    }
 } else {
-    $realIp = $_SERVER['HTTP_X_REAL_IP'] ?? '';
-    $ip = ($realIp !== '' && filter_var($realIp, FILTER_VALIDATE_IP)) ? $realIp : ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    $ip = $remoteAddr;
 }
-$key = strtolower(trim((string)$usuario)) . '|' . $ip;
+
 $maxAttempts = LOGIN_MAX_ATTEMPTS;
 $windowSeconds = LOGIN_WINDOW_SECONDS;
 $lockSeconds = LOGIN_LOCK_SECONDS;
@@ -84,48 +94,30 @@ function clearLoginAttempt(database $db, string $username, string $ip): void
     );
 }
 
-if (!isset($_SESSION['login_attempts'])) {
-    $_SESSION['login_attempts'] = [];
-}
+$db = getRequestDatabase();
 
-$attempt = $_SESSION['login_attempts'][$key] ?? [
-    'count' => 0,
-    'first_at' => $now,
-    'locked_until' => 0
-];
+$attempt = ['count' => 0, 'first_at' => $now, 'locked_until' => 0];
 
-if (!empty($attempt['locked_until']) && $attempt['locked_until'] > $now) {
-    $_SESSION['error'] = 'Muitas tentativas. Tente novamente em alguns minutos.';
-    header('Location: index.php?page=login');
-    exit;
+try {
+    $attemptFromDb = readLoginAttempt($db, (string)$usuario, $ip, $now);
+    if ($attemptFromDb !== null) {
+        $attempt = $attemptFromDb;
+        if (!empty($attempt['locked_until']) && $attempt['locked_until'] > $now) {
+            $_SESSION['error'] = 'Muitas tentativas. Tente novamente em alguns minutos.';
+            header('Location: index.php?page=login');
+            exit;
+        }
+    }
+} catch (Throwable $e) {
+    // Fallback: permitir tentativa se DB estiver indisponível
 }
 
 if (($now - (int)$attempt['first_at']) > $windowSeconds) {
     $attempt = ['count' => 0, 'first_at' => $now, 'locked_until' => 0];
 }
 
-$db = getRequestDatabase();
-$useDbRateLimit = false;
-try {
-    $attemptFromDb = readLoginAttempt($db, (string)$usuario, $ip, $now);
-    if ($attemptFromDb !== null) {
-        $useDbRateLimit = true;
-        $attempt = $attemptFromDb;
-    }
-} catch (Throwable $e) {
-    $useDbRateLimit = false;
-}
-
-if ($useDbRateLimit && !empty($attempt['locked_until']) && $attempt['locked_until'] > $now) {
-    $_SESSION['error'] = 'Muitas tentativas. Tente novamente em alguns minutos.';
-    header('Location: index.php?page=login');
-    exit;
-}
-
-$params = [
-    ':usuario' => $usuario
-];
-$sql = "SELECT * FROM usuarios WHERE usuario = :usuario";
+$sql = "SELECT id, usuario, nome, senha, ativo, nivel_acesso_id, senha_temporaria FROM usuarios WHERE usuario = :usuario";
+$params = [':usuario' => $usuario];
 $result = $db->query($sql, $params);
 
 if($result['status'] === 'error') {
@@ -137,11 +129,7 @@ if(count($result['data']) === 0) {
     if ($attempt['count'] >= $maxAttempts) {
         $attempt['locked_until'] = $now + $lockSeconds;
     }
-    if ($useDbRateLimit) {
-        persistLoginAttempt($db, (string)$usuario, $ip, $attempt);
-    } else {
-        $_SESSION['login_attempts'][$key] = $attempt;
-    }
+    persistLoginAttempt($db, (string)$usuario, $ip, $attempt);
     $_SESSION['error'] = 'Usuario ou senha invalidos';
     header('Location: index.php?page=login');
     exit;
@@ -151,11 +139,7 @@ if(!verifyPassword($senha, $result['data'][0]->senha)) {
     if ($attempt['count'] >= $maxAttempts) {
         $attempt['locked_until'] = $now + $lockSeconds;
     }
-    if ($useDbRateLimit) {
-        persistLoginAttempt($db, (string)$usuario, $ip, $attempt);
-    } else {
-        $_SESSION['login_attempts'][$key] = $attempt;
-    }
+    persistLoginAttempt($db, (string)$usuario, $ip, $attempt);
     $_SESSION['error'] = 'Usuario ou senha invalidos';
     header('Location: index.php?page=login');
     exit;
@@ -169,10 +153,7 @@ if ((int)($usuarioDb->ativo ?? 1) !== 1) {
 }
 
 session_regenerate_id(true);
-unset($_SESSION['login_attempts'][$key]);
-if ($useDbRateLimit) {
-    clearLoginAttempt($db, (string)$usuario, $ip);
-}
+clearLoginAttempt($db, (string)$usuario, $ip);
 
 // Buscar o nível de acesso do usuário e adicioná-lo ao objeto
 $nivelAcessoQuery = $db->query(

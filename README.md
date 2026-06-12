@@ -1,4 +1,4 @@
-# Sistema de Gerenciamento de Câmeras e Alarmes (GML) v1.0
+# Sistema de Gerenciamento de Câmeras e Alarmes v1.0
 
 [![CI/CD Pipeline](https://github.com/YOUR_ORG/sistema-cameras/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/YOUR_ORG/sistema-cameras/actions)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1+-blue)](https://www.php.net/)

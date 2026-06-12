@@ -2,12 +2,7 @@
 
 function getRequestDatabase(): database
 {
-    static $db = null;
-    if ($db === null) {
-        $db = new database();
-    }
-
-    return $db;
+    return database::getInstance();
 }
 
 function verificarTimeout($isApi = false, $tempo_maximo = SESSION_TIMEOUT)
@@ -18,7 +13,29 @@ function verificarTimeout($isApi = false, $tempo_maximo = SESSION_TIMEOUT)
 
     $now = time();
     if (!isset($_SESSION['session_started_at'])) {
-        $_SESSION['session_started_at'] = $now;
+        $usuarioId = currentUserId();
+        $sessionToken = $_SESSION['session_token'] ?? null;
+        if ($usuarioId) {
+            try {
+                $db = getRequestDatabase();
+                invalidateUniqueSession($db, $usuarioId, $sessionToken);
+            } catch (Throwable $e) {
+                error_log('Erro ao invalidar sessao por falta de timestamp: ' . $e->getMessage());
+            }
+        }
+        clearLocalSessionState();
+        if ($isApi) {
+            http_response_code(401);
+            header('Content-Type: application/json; charset=UTF-8');
+            header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+            echo json_encode([
+                'status' => 'expired', 'success' => false, 'error' => 'Sessao invalida',
+                'message' => 'Sessao invalida. Realize login novamente.'
+            ]);
+            exit;
+        }
+        header('Location: index.php?page=login&timeout=1');
+        exit;
     }
     if (SESSION_ABSOLUTE_TIMEOUT > 0) {
         $elapsed = $now - (int)$_SESSION['session_started_at'];
@@ -98,9 +115,7 @@ function verificarTimeout($isApi = false, $tempo_maximo = SESSION_TIMEOUT)
         exit;
     }
 
-    if (!$isApi) {
-        $_SESSION['ultimo_acesso'] = time();
-    }
+    $_SESSION['ultimo_acesso'] = time();
 
     return max(0, $time_left);
 }

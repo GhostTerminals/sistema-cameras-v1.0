@@ -62,14 +62,12 @@ try {
             $svc->rollback();
             $rolledBack = true;
         }
-    } catch (Exception $ignored) {}
+    } catch (Exception $rollbackEx) {
+        error_log('[api_cadastrar_cameras] CRITICAL: Rollback falhou: ' . $rollbackEx->getMessage());
+    }
 
     if (isset($equipId) && !$rolledBack) {
-        ApiResponse::created([
-            'message' => "Equipamento cadastrado com sucesso! ID: $equipId",
-            'camera_id' => $equipId,
-            'redirect' => 'index.php?page=controle_cameras',
-        ], $equipId);
+        error_log('[api_cadastrar_cameras] CRITICAL: Estado inconsistente - equipId=' . ($equipId ?? 'null') . ' - rollback falhou');
     }
 
     error_log('[api_cadastrar_cameras] ' . $e->getMessage());

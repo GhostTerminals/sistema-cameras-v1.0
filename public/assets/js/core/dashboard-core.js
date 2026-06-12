@@ -6,7 +6,7 @@ window.DashboardCore = class DashboardCore {
     }
     async fetchData(endpoint) {
         try {
-            const response = await fetch(endpoint);
+            const response = await fetchWithTimeout(endpoint);
             return await response.json();
         } catch (error) {
             console.error('Erro ao buscar dados:', error);

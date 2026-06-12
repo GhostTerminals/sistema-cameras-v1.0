@@ -7,21 +7,22 @@ describe('showToast', () => {
     globalThis.document = {
       addEventListener: vi.fn(),
       querySelector: vi.fn(),
+      createElement: vi.fn(() => ({
+        className: '',
+        style: {},
+        appendChild: vi.fn(),
+        insertAdjacentHTML: vi.fn(),
+        getElementById: vi.fn(),
+      })),
+      body: {
+        appendChild: vi.fn(),
+      },
     }
   })
 
-  it('should be defined as a function', async () => {
-    await import('../../public/assets/js/main.js')
+  it('should be defined as a function in ui-utils', async () => {
+    await import('../../public/assets/js/utils/ui-utils.js')
 
     expect(typeof window.showToast).toBe('function')
-  })
-
-  it('should call showToast successfully', async () => {
-    window.showToast = vi.fn()
-    await import('../../public/assets/js/main.js')
-
-    window.showToast('test message', 'success')
-
-    expect(window.showToast).toHaveBeenCalledWith('test message', 'success')
   })
 })

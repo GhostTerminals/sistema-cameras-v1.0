@@ -17,7 +17,9 @@ try {
         ApiResponse::forbidden('Perfil sem permissao para acessar este recurso.');
     }
 
-    $id = (int)($_POST['id'] ?? 0);
+    $rawBody = file_get_contents('php://input');
+    $body = json_decode($rawBody, true) ?? [];
+    $id = (int)($body['id'] ?? ($_POST['id'] ?? 0));
     if (!$id) {
         ApiResponse::error('VALIDATION_ERROR', 'ID não informado.');
     }

@@ -85,7 +85,7 @@ function registerGlobalErrorHandlers(string $context = 'web'): void
                 'error' => 'Erro interno do servidor.',
                 'message' => 'Erro interno do servidor.'
             ], JSON_UNESCAPED_UNICODE);
-            return;
+            exit(1);
         }
 
         if (!headers_sent()) {
@@ -96,6 +96,7 @@ function registerGlobalErrorHandlers(string $context = 'web'): void
         } else {
             echo 'Erro interno do servidor.';
         }
+        exit(1);
     });
 }
 

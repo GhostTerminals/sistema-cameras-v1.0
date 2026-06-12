@@ -174,6 +174,7 @@ try {
                 cm.nome AS modelo_nome,
                 elpr.sentido_via AS lpr_sentido_via,
                 elpr.faixa_monitorada AS lpr_faixa_monitorada,
+                elpr.url_acesso AS lpr_url_acesso,
                 elpr.leitura_noturna AS lpr_leitura_noturna,
                 edvr.modelo AS dvr_modelo,
                 edvr.canais AS dvr_canais,
@@ -183,7 +184,10 @@ try {
                 etot.tem_lpr AS totem_tem_lpr
             {$baseFrom}
             ORDER BY e.id DESC
-            LIMIT {$perPage} OFFSET {$offset}";
+            LIMIT :limit_val OFFSET :offset_val";
+
+    $params[':limit_val'] = $perPage;
+    $params[':offset_val'] = $offset;
 
     $result = $db->query($sql, $params);
     if (!$result || $result['status'] !== 'success') {

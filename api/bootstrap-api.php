@@ -126,10 +126,21 @@ function executeApiRequest(?string $endpointOverride = null): void
     $allowedOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
     $isSameOrigin = false;
     if (!empty($allowedOrigin)) {
-        $serverScheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $serverHost = $_SERVER['HTTP_HOST'] ?? '';
-        $expectedOrigin = "{$serverScheme}://{$serverHost}";
-        $isSameOrigin = $allowedOrigin === $expectedOrigin;
+        if (defined('APP_ALLOWED_ORIGINS') && APP_ALLOWED_ORIGINS !== '') {
+            $configuredOrigins = array_map('trim', explode(',', APP_ALLOWED_ORIGINS));
+            $isSameOrigin = in_array($allowedOrigin, $configuredOrigins, true);
+        } else {
+            $serverScheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            $serverPort = $_SERVER['SERVER_PORT'] ?? '80';
+            $serverName = $_SERVER['SERVER_NAME'] ?? '';
+            if ($serverName !== '') {
+                $defaultPort = ($serverScheme === 'https') ? '443' : '80';
+                $expectedOrigin = ($serverPort === $defaultPort)
+                    ? "{$serverScheme}://{$serverName}"
+                    : "{$serverScheme}://{$serverName}:{$serverPort}";
+                $isSameOrigin = $allowedOrigin === $expectedOrigin;
+            }
+        }
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -158,17 +169,13 @@ function executeApiRequest(?string $endpointOverride = null): void
     $noRotateEndpoints = ['renovar_sessao'];
     if (!in_array($endpoint, $publicEndpoints, true)) {
         requireApiAccessForEndpoint($endpoint);
-        $shouldRotate = !in_array($endpoint, $noRotateEndpoints, true);
-        requireApiCsrf($shouldRotate);
     }
+    $shouldRotate = !in_array($endpoint, $noRotateEndpoints, true);
+    requireApiCsrf($shouldRotate);
 
     if ($exists && file_exists($filepath)) {
         include $filepath;
     } else {
         ApiResponse::notFound('endpoint', $endpoint);
     }
-}
-
-if (PHP_SAPI !== 'cli' && !defined('API_INCLUDED_FROM_INDEX')) {
-    executeApiRequest();
 }

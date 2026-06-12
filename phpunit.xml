@@ -31,11 +31,20 @@
   </source>
 
   <coverage>
-    <report>
-      <clover outputFile="clover.xml"/>
-      <html outputDirectory="coverage"/>
-      <text outputFile="php://stdout" showUncoveredFiles="true" showOnlySummary="true"/>
-    </report>
+    <include>
+      <directory suffix=".php">src</directory>
+      <directory suffix=".php">api</directory>
+      <directory suffix=".php">inc</directory>
+      <directory suffix=".php">config</directory>
+      <directory suffix=".php">auth</directory>
+      <directory suffix=".php">accounts</directory>
+    </include>
+    <exclude>
+      <directory suffix="Test.php">tests</directory>
+      <directory>vendor</directory>
+      <directory>node_modules</directory>
+      <directory>.tmp</directory>
+    </exclude>
   </coverage>
 
   <php>

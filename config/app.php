@@ -36,7 +36,12 @@ function isHttpsRequest(): bool
         return true;
     }
     if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
-        return true;
+        if (defined('PROXY_TRUSTED_IPS') && PROXY_TRUSTED_IPS !== '') {
+            $trustedProxies = array_map('trim', explode(',', PROXY_TRUSTED_IPS));
+            if (in_array($_SERVER['REMOTE_ADDR'] ?? '', $trustedProxies, true)) {
+                return true;
+            }
+        }
     }
     return false;
 }

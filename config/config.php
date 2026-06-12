@@ -36,10 +36,13 @@ function loadLocalEnvFile(string $envPath): void
             continue;
         }
 
-        $value = trim($value, "\"'");
+        // Remove aspas como par (simples ou duplas)
+        if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+            (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+            $value = substr($value, 1, -1);
+        }
         putenv($key . '=' . $value);
         $_ENV[$key] = $value;
-        $_SERVER[$key] = $value;
     }
 }
 
@@ -84,26 +87,6 @@ $envDbUser = getenv('DB_USER');
 $envDbPass = getenv('DB_PASS');
 
 $isProduction = defined('ENVIRONMENT') && ENVIRONMENT === 'production';
-if ($isProduction) {
-    $missing = [];
-    if ($envDbHost === false || $envDbHost === '') {
-        $missing[] = 'DB_HOST';
-    }
-    if ($envDbName === false || $envDbName === '') {
-        $missing[] = 'DB_NAME';
-    }
-    if ($envDbUser === false || $envDbUser === '') {
-        $missing[] = 'DB_USER';
-    }
-    if ($envDbPass === false || $envDbPass === '') {
-        $missing[] = 'DB_PASS';
-    }
-    if (!empty($missing)) {
-        $msg = 'Configuracao do banco ausente: ' . implode(', ', $missing);
-        error_log($msg);
-        throw new RuntimeException($msg);
-    }
-}
 
 if ($envDbPass === false || $envDbPass === '') {
     $msg = 'Configuracao do banco ausente: DB_PASS';
@@ -124,3 +107,10 @@ define('DB_HOST', $envDbHost);
 define('DB_NAME', $envDbName);
 define('DB_USER', $envDbUser);
 define('DB_PASS', $envDbPass);
+
+if (!defined('PROXY_TRUSTED_IPS')) {
+    define('PROXY_TRUSTED_IPS', getenv('PROXY_TRUSTED_IPS') ?: '');
+}
+if (!defined('APP_ALLOWED_ORIGINS')) {
+    define('APP_ALLOWED_ORIGINS', getenv('APP_ALLOWED_ORIGINS') ?: '');
+}

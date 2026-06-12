@@ -75,6 +75,5 @@ function showSuccessModal(title, message) {
 }
 
 if (typeof window !== 'undefined') {
-  window.showToast = window.showToast || showToast;
   window.showSuccessModal = showSuccessModal;
 }
