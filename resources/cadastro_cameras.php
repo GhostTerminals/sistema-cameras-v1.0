@@ -190,7 +190,7 @@ unset($_SESSION['form_data']);
                             </div>
                             <div class="card-body">
                             <div class="row g-4">
-                                <div class="col-md-6">
+                                <div class="col-md-5">
                                     <label class="form-label required">Marca</label>
                                     <select name="marca_id" id="marcaSelect" class="form-select" required>
                                         <option value="">Selecione...</option>
@@ -204,7 +204,16 @@ unset($_SESSION['form_data']);
                                     <div class="invalid-feedback">Selecione a marca</div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-2 d-flex align-items-center justify-content-center" style="padding-top: 30px;">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" id="toggleModeloExistente">
+                                        <label class="form-check-label" for="toggleModeloExistente" style="white-space: nowrap; font-size:0.88rem;">
+                                            Usar modelo existente
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5">
                                     <label class="form-label required">Modelo</label>
                                     <div id="modeloContainer">
                                         <input type="text" name="novo_modelo_nome" class="form-control" required
@@ -212,12 +221,6 @@ unset($_SESSION['form_data']);
                                             placeholder="Ex: IPC-HDW5842T-ZE, DS-2CD2143G0-I">
                                         <input type="hidden" name="modelo_id" id="modelo_id"
                                             value="<?= $formData['modelo_id'] ?? '' ?>">
-                                    </div>
-                                    <div class="form-check mt-2">
-                                        <input class="form-check-input" type="checkbox" id="toggleModeloExistente">
-                                        <label class="form-check-label" for="toggleModeloExistente">
-                                            Usar modelo existente
-                                        </label>
                                     </div>
                                     <div class="invalid-feedback">Informe o modelo da câmera</div>
                                 </div>
@@ -285,6 +288,102 @@ unset($_SESSION['form_data']);
                                     <div class="form-text">Inscrição do link</div>
                                 </div>
                             </div>
+
+                            <!-- Campos específicos LPR -->
+                            <div id="secaoEspecificaLPR" style="display:none">
+                                <hr>
+                                <h6 class="text-primary mb-3"><i class="fas fa-car me-1"></i>Especificações LPR</h6>
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Sentido da Via</label>
+                                        <input type="text" name="lpr_sentido_via" class="form-control"
+                                            value="<?= htmlspecialchars($formData['lpr_sentido_via'] ?? '') ?>"
+                                            maxlength="50" placeholder="Ex: CRESCENTE, DECRESCENTE">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Faixa Monitorada</label>
+                                        <input type="text" name="lpr_faixa_monitorada" class="form-control"
+                                            value="<?= htmlspecialchars($formData['lpr_faixa_monitorada'] ?? '') ?>"
+                                            maxlength="50" placeholder="Ex: FAIXA 1, FAIXA 2">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mt-4">
+                                            <input class="form-check-input" type="checkbox" name="lpr_leitura_noturna" id="lprLeituraNoturna" value="1"
+                                                <?= !empty($formData['lpr_leitura_noturna']) ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="lprLeituraNoturna">
+                                                Leitura Noturna
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">URL de Acesso</label>
+                                        <input type="url" name="lpr_url_acesso" class="form-control"
+                                            value="<?= htmlspecialchars($formData['lpr_url_acesso'] ?? '') ?>"
+                                            maxlength="2083" placeholder="https://...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campos específicos DVR -->
+                            <div id="secaoEspecificaDVR" style="display:none">
+                                <hr>
+                                <h6 class="text-primary mb-3"><i class="fas fa-hdd me-1"></i>Especificações DVR</h6>
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label required">Modelo</label>
+                                        <input type="text" name="dvr_modelo" class="form-control" required
+                                            value="<?= htmlspecialchars($formData['dvr_modelo'] ?? '') ?>"
+                                            maxlength="80" placeholder="Ex: DVR 1104, DS-7104">
+                                        <div class="invalid-feedback">Informe o modelo do DVR</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Canais</label>
+                                        <input type="number" name="dvr_canais" class="form-control"
+                                            value="<?= htmlspecialchars($formData['dvr_canais'] ?? '') ?>"
+                                            min="1" placeholder="Ex: 4, 8, 16">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Armazenamento (TB)</label>
+                                        <input type="number" name="dvr_armazenamento_tb" class="form-control"
+                                            value="<?= htmlspecialchars($formData['dvr_armazenamento_tb'] ?? '') ?>"
+                                            min="0" step="0.01" placeholder="Ex: 2.00">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Campos específicos Totem -->
+                            <div id="secaoEspecificaTotem" style="display:none">
+                                <hr>
+                                <h6 class="text-primary mb-3"><i class="fas fa-desktop me-1"></i>Especificações Totem</h6>
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label required">Quantidade de Câmeras</label>
+                                        <input type="number" name="totem_quantidade_cameras" class="form-control" required
+                                            value="<?= htmlspecialchars($formData['totem_quantidade_cameras'] ?? '') ?>"
+                                            min="1" placeholder="Ex: 4">
+                                        <div class="invalid-feedback">Informe a quantidade de câmeras</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mt-4">
+                                            <input class="form-check-input" type="checkbox" name="totem_tem_facial" id="totemTemFacial" value="1"
+                                                <?= !empty($formData['totem_tem_facial']) ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="totemTemFacial">
+                                                <i class="fas fa-face-smile me-1"></i>Reconhecimento Facial
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check mt-4">
+                                            <input class="form-check-input" type="checkbox" name="totem_tem_lpr" id="totemTemLpr" value="1"
+                                                <?= !empty($formData['totem_tem_lpr']) ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="totemTemLpr">
+                                                <i class="fas fa-car me-1"></i>Leitor de Placa (LPR)
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div></div>
 
                         <!-- Seção 3: Identificação -->
@@ -324,108 +423,6 @@ unset($_SESSION['form_data']);
                                         value="<?= htmlspecialchars($formData['mosaico'] ?? '') ?>"
                                         placeholder="Posição no mosaico (ex: CAM-01)">
                                     <div class="form-text">Identificação no mosaico de câmeras</div>
-                                </div>
-                            </div>
-                        </div></div>
-
-                        <!-- Seção 3.5: Campos Específicos por Tipo de Dispositivo -->
-                        <div class="card alarme-section-card mb-3" id="secaoEspecificaLPR" style="display:none">
-                            <div class="card-header alarme-section-header d-flex align-items-center gap-2">
-                                <i class="fas fa-car"></i>
-                                <span>Especificações LPR (Leitura de Placas)</span>
-                            </div>
-                            <div class="card-body">
-                            <div class="row g-4">
-                                <div class="col-md-4">
-                                    <label class="form-label">Sentido da Via</label>
-                                    <input type="text" name="lpr_sentido_via" class="form-control"
-                                        value="<?= htmlspecialchars($formData['lpr_sentido_via'] ?? '') ?>"
-                                        maxlength="50" placeholder="Ex: CRESCENTE, DECRESCENTE">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Faixa Monitorada</label>
-                                    <input type="text" name="lpr_faixa_monitorada" class="form-control"
-                                        value="<?= htmlspecialchars($formData['lpr_faixa_monitorada'] ?? '') ?>"
-                                        maxlength="50" placeholder="Ex: FAIXA 1, FAIXA 2">
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check mt-4">
-                                        <input class="form-check-input" type="checkbox" name="lpr_leitura_noturna" id="lprLeituraNoturna" value="1"
-                                            <?= !empty($formData['lpr_leitura_noturna']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="lprLeituraNoturna">
-                                            Leitura Noturna
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">URL de Acesso</label>
-                                    <input type="url" name="lpr_url_acesso" class="form-control"
-                                        value="<?= htmlspecialchars($formData['lpr_url_acesso'] ?? '') ?>"
-                                        maxlength="2083" placeholder="https://...">
-                                </div>
-                            </div>
-                        </div></div>
-
-                        <div class="card alarme-section-card mb-3" id="secaoEspecificaDVR" style="display:none">
-                            <div class="card-header alarme-section-header d-flex align-items-center gap-2">
-                                <i class="fas fa-hdd"></i>
-                                <span>Especificações DVR (Gravador)</span>
-                            </div>
-                            <div class="card-body">
-                            <div class="row g-4">
-                                <div class="col-md-4">
-                                    <label class="form-label required">Modelo</label>
-                                    <input type="text" name="dvr_modelo" class="form-control" required
-                                        value="<?= htmlspecialchars($formData['dvr_modelo'] ?? '') ?>"
-                                        maxlength="80" placeholder="Ex: DVR 1104, DS-7104">
-                                    <div class="invalid-feedback">Informe o modelo do DVR</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Canais</label>
-                                    <input type="number" name="dvr_canais" class="form-control"
-                                        value="<?= htmlspecialchars($formData['dvr_canais'] ?? '') ?>"
-                                        min="1" placeholder="Ex: 4, 8, 16">
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label">Armazenamento (TB)</label>
-                                    <input type="number" name="dvr_armazenamento_tb" class="form-control"
-                                        value="<?= htmlspecialchars($formData['dvr_armazenamento_tb'] ?? '') ?>"
-                                        min="0" step="0.01" placeholder="Ex: 2.00">
-                                </div>
-                            </div>
-                        </div></div>
-
-                        <div class="card alarme-section-card mb-3" id="secaoEspecificaTotem" style="display:none">
-                            <div class="card-header alarme-section-header d-flex align-items-center gap-2">
-                                <i class="fas fa-desktop"></i>
-                                <span>Especificações Totem</span>
-                            </div>
-                            <div class="card-body">
-                            <div class="row g-4">
-                                <div class="col-md-4">
-                                    <label class="form-label required">Quantidade de Câmeras</label>
-                                    <input type="number" name="totem_quantidade_cameras" class="form-control" required
-                                        value="<?= htmlspecialchars($formData['totem_quantidade_cameras'] ?? '') ?>"
-                                        min="1" placeholder="Ex: 4">
-                                    <div class="invalid-feedback">Informe a quantidade de câmeras</div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check mt-4">
-                                        <input class="form-check-input" type="checkbox" name="totem_tem_facial" id="totemTemFacial" value="1"
-                                            <?= !empty($formData['totem_tem_facial']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="totemTemFacial">
-                                            <i class="fas fa-face-smile me-1"></i>Reconhecimento Facial
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check mt-4">
-                                        <input class="form-check-input" type="checkbox" name="totem_tem_lpr" id="totemTemLpr" value="1"
-                                            <?= !empty($formData['totem_tem_lpr']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="totemTemLpr">
-                                            <i class="fas fa-car me-1"></i>Leitor de Placa (LPR)
-                                        </label>
-                                    </div>
                                 </div>
                             </div>
                         </div></div>

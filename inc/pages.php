@@ -11,14 +11,21 @@ return [
     'trocar_senha',
     'recuperar_senha',
 
-    // MODULO: ADMIN (pasta /accounts)
+    // MODULO: ADMIN (pasta /accounts e /resources)
     'administracao',
     'cadastroUsuario',
     'listarUsuario',
     'editarUsuario',
-    'bloquearUsuario', 
+    'bloquearUsuario',
     'ativarUsuario',
     'deletarUsuario',
+    'listar_escolas',
+    'listar_cmeis',
+    'listar_operadoras',
+    'listar_proprios',
+    'listar_locais',
+    'cadastro_locais',
+    'editar_locais',
 
     // MODULO: SISTEMA DE CAMERAS (pasta /resources)
     'cadastro_cameras',

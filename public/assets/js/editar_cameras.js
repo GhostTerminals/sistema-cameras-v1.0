@@ -25,6 +25,11 @@ class EditarCamera {
         if (this.tipoSelect) {
             this.tipoSelect.addEventListener("change", () => this.handleTipoChange());
         }
+
+        const tipoCameraSelect = this.form.querySelector('[name="tipo_camera"]');
+        if (tipoCameraSelect) {
+            tipoCameraSelect.addEventListener("change", () => this.handleTipoChange());
+        }
         
         if (this.toggleModeloExistente) {
             this.toggleModeloExistente.addEventListener("change", () => this.toggleTipoModelo());
@@ -34,6 +39,9 @@ class EditarCamera {
         this.initMasks();
         aplicarUppercaseUniversal(this.form);
         this.initOrigemInscricaoSync();
+
+        // Inicializar visibilidade das seções específicas por tipo
+        this.handleTipoChange();
         
 
     }
@@ -135,12 +143,14 @@ class EditarCamera {
 
     handleTipoChange() {
         const tipoId = this.tipoSelect ? parseInt(this.tipoSelect.value) : 0;
+        const tipoCameraSelect = this.form.querySelector('[name="tipo_camera"]');
+        const tipoCameraId = tipoCameraSelect ? parseInt(tipoCameraSelect.value) : 0;
 
         const secaoLPR = document.getElementById("secaoEditLPR");
         const secaoDVR = document.getElementById("secaoEditDVR");
         const secaoTotem = document.getElementById("secaoEditTotem");
 
-        if (secaoLPR) secaoLPR.style.display = tipoId === 2 ? "" : "none";
+        if (secaoLPR) secaoLPR.style.display = (tipoId === 2 || tipoCameraId === 3) ? "" : "none";
         if (secaoDVR) secaoDVR.style.display = tipoId === 3 ? "" : "none";
         if (secaoTotem) secaoTotem.style.display = tipoId === 4 ? "" : "none";
     }
@@ -502,6 +512,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (totemFacialField) totemFacialField.checked = !!camera.totem_tem_facial;
         const totemLprField = form.querySelector('[name="totem_tem_lpr"]');
         if (totemLprField) totemLprField.checked = !!camera.totem_tem_lpr;
+
+        // Disparar change nos selects de tipo para atualizar seções condicionais
+        const tipoSelect = form.querySelector('[name="tipo_id"]');
+        if (tipoSelect) tipoSelect.dispatchEvent(new Event('change'));
 
         // Alarme
         const temAlarmeField = form.querySelector('[name="tem_alarme"]');

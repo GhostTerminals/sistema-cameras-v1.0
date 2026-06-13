@@ -253,18 +253,22 @@ $wslIp = (wsl -d Debian -- hostname -I).Trim().Split(' ')[0]
 
 Write-Host "WSL2 IP: $wslIp" -ForegroundColor Cyan
 
-netsh interface portproxy delete v4tov4 listenport=80   listenaddress=0.0.0.0 2>$null
 netsh interface portproxy delete v4tov4 listenport=8080 listenaddress=0.0.0.0 2>$null
 netsh interface portproxy delete v4tov4 listenport=8081 listenaddress=0.0.0.0 2>$null
+netsh interface portproxy delete v4tov4 listenport=8082   listenaddress=0.0.0.0 2>$null
+netsh interface portproxy delete v4tov4 listenport=8083   listenaddress=0.0.0.0 2>$null
 
-netsh interface portproxy add v4tov4 listenport=80   listenaddress=0.0.0.0 connectport=80   connectaddress=$wslIp
 netsh interface portproxy add v4tov4 listenport=8080 listenaddress=0.0.0.0 connectport=8080 connectaddress=$wslIp
 netsh interface portproxy add v4tov4 listenport=8081 listenaddress=0.0.0.0 connectport=8081 connectaddress=$wslIp
+netsh interface portproxy add v4tov4 listenport=8082   listenaddress=0.0.0.0 connectport=8082   connectaddress=$wslIp
+netsh interface portproxy add v4tov4 listenport=8083  listenaddress=0.0.0.0 connectport=8083   connectaddress=$wslIp
 
 # Firewall
-New-NetFirewallRule -DisplayName "WSL2-Cameras-80"     -Direction Inbound -Protocol TCP -LocalPort 80   -Action Allow -ErrorAction SilentlyContinue
+
 New-NetFirewallRule -DisplayName "WSL2-Visitantes-8080" -Direction Inbound -Protocol TCP -LocalPort 8080 -Action Allow -ErrorAction SilentlyContinue
-New-NetFirewallRule -DisplayName "WSL2-PMA-8081"       -Direction Inbound -Protocol TCP -LocalPort 8081 -Action Allow -ErrorAction SilentlyContinue
+New-NetFirewallRule -DisplayName "WSL2-PMAV-8081"       -Direction Inbound -Protocol TCP -LocalPort 8081 -Action Allow -ErrorAction SilentlyContinue
+New-NetFirewallRule -DisplayName "WSL2-Cameras-8082"     -Direction Inbound -Protocol TCP -LocalPort 8082   -Action Allow -ErrorAction SilentlyContinue
+New-NetFirewallRule -DisplayName "WSL2-PMAC-8083"     -Direction Inbound -Protocol TCP -LocalPort 8083   -Action Allow -ErrorAction SilentlyContinue
 ```
 
 **Executar:**

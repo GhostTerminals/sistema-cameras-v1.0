@@ -14,7 +14,8 @@ GRANT ALL PRIVILEGES ON cftv_gml.* TO 'gmluser'@'localhost';
 FLUSH PRIVILEGES;
 
 INSERT INTO usuarios (nome, usuario, senha, nivel_acesso_id, senha_temporaria) VALUES
-('Administrador Sistema','admin','$2y$10$WLFdgPpyVeQglDo2wggnDeFBb5EfoZ8UOyBziquqvXCUlM3VqNbzC',1,1),
-('User Sistema','user','$2y$10$NmG.JfubmdUpWGlLpksWfuzc913CobhE6xDKaEB6ABk26GOehWLwm',3,1),
-('Supervisor Sistema','supervisor','$2y$10$wSoUtQf9losEWf8llaZddu1hPY3lc0Qzbzqw4K6Y2MPeWg7L9IhAe',2,1);
+('Administrador Sistema','admin','$2y$10$VIFP3Z9OtR.TDWXWXaEViuuIwBjtH3BpUeK23519vDVaRpvBpc6li',1,1),
+('Supervisor Sistema','supervisor','$2y$10$VIFP3Z9OtR.TDWXWXaEViuuIwBjtH3BpUeK23519vDVaRpvBpc6li',2,1),
+('User Sistema','user','$2y$10$VIFP3Z9OtR.TDWXWXaEViuuIwBjtH3BpUeK23519vDVaRpvBpc6li',3,1);
 
+-- Senha temporais em ambiente de desenvolvimento, devem ser alteradas no primeiro acesso

@@ -357,6 +357,7 @@ class EquipamentoService
     public function saveTipoSpecificInsert(int $equipId, int $tipoId, array $data): void
     {
         $fields = $this->extractCommonData($data);
+        $tipoCameraId = (int)($data['tipo_camera'] ?? 0);
 
         $insertCamera = $this->db->query(
             "INSERT INTO equipamentos_camera (equipamento_id, mosaico, coordenadas, numero_ruas) VALUES (?, ?, ?, ?)",
@@ -366,7 +367,7 @@ class EquipamentoService
             throw new Exception('Erro ao salvar detalhes da câmera.');
         }
 
-        if ($tipoId === 2) {
+        if ($tipoId === 2 || $tipoCameraId === 3) {
             $result = $this->db->query(
                     "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, url_acesso, leitura_noturna) VALUES (?, ?, ?, ?, ?)",
                     [$equipId, $fields['lpr_sentido_via'], $fields['lpr_faixa_monitorada'], $fields['lpr_url_acesso'], $fields['lpr_leitura_noturna']]
@@ -396,6 +397,7 @@ class EquipamentoService
     public function saveTipoSpecificUpsert(int $equipId, int $tipoId, array $data): void
     {
         $fields = $this->extractCommonData($data);
+        $tipoCameraId = (int)($data['tipo_camera'] ?? 0);
 
         $this->db->query(
             "INSERT INTO equipamentos_camera (equipamento_id, mosaico, coordenadas, numero_ruas)
@@ -407,7 +409,7 @@ class EquipamentoService
             [$equipId, $fields['mosaico'], $fields['coordenadas'], $fields['numero_ruas']]
         );
 
-        if ($tipoId === 2) {
+        if ($tipoId === 2 || $tipoCameraId === 3) {
             $this->db->query(
                 "INSERT INTO equipamentos_lpr (equipamento_id, sentido_via, faixa_monitorada, url_acesso, leitura_noturna)
                  VALUES (?, ?, ?, ?, ?)

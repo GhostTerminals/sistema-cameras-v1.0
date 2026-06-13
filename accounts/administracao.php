@@ -1,121 +1,175 @@
 <?php
 require_once __DIR__ . '/../inc/navbar.php';
 requererAcesso('admin');
+
+// Get statistics
+$db = db();
+
+// Count users
+$totalUsers = 0;
+$r = $db->query("SELECT COUNT(*) as total FROM usuarios");
+if ($r['status'] === 'success') $totalUsers = (int)($r['data'][0]->total ?? 0);
+
+// Count escolas
+$totalEscolas = 0;
+$r = $db->query("SELECT COUNT(*) as total FROM locais WHERE nome LIKE '%ESCOLA%'");
+if ($r['status'] === 'success') $totalEscolas = (int)($r['data'][0]->total ?? 0);
+
+// Count CMEIs
+$totalCmeis = 0;
+$r = $db->query("SELECT COUNT(*) as total FROM locais WHERE nome LIKE '%CMEI%'");
+if ($r['status'] === 'success') $totalCmeis = (int)($r['data'][0]->total ?? 0);
+
+// Count operadoras
+$totalOperadoras = 0;
+$r = $db->query("SELECT COUNT(*) as total FROM origem_link");
+if ($r['status'] === 'success') $totalOperadoras = (int)($r['data'][0]->total ?? 0);
+
+// Count proprios publicos
+$totalProprios = 0;
+$r = $db->query("SELECT COUNT(*) as total FROM locais WHERE tipo_local_id = (SELECT id FROM tipos_locais WHERE nome = 'PREDIO PUBLICO')");
+if ($r['status'] === 'success') $totalProprios = (int)($r['data'][0]->total ?? 0);
 ?>
 
-<style nonce="<?= htmlspecialchars($CSP_NONCE ?? '', ENT_QUOTES, 'UTF-8') ?>">
-.admin-page .btn-admin-strong {
-    background: linear-gradient(135deg, #0f4c81, #0c3a63);
-    color: #fff;
-    border: none;
-    box-shadow: 0 8px 18px rgba(12, 58, 99, 0.25);
-}
-
-.admin-page .btn-admin-strong:hover {
-    color: #fff;
-    background: linear-gradient(135deg, #0c3a63, #0a304f);
-}
-
-.admin-page .u-admin-logo-side {
-    max-height: 280px;
-    object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.18));
-}
-
-.admin-page .admin-tools .btn {
-    font-weight: 600;
-}
-
-</style>
-
-<section class="admin-page bg-body-tertiary d-flex align-items-center">
-    <div class="container">
-        <div class="mb-3">
-            <a href="?page=home" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-1"></i>Voltar
-            </a>
-        </div>
-        <div class="row justify-content-center align-items-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-body p-5">
-                        <div class="text-center mb-4">
-                            <h3 class="fw-bold mb-1">Cadastrar Usuario</h3>
-                            <p class="text-muted small mb-0">Gerencie os acessos do sistema</p>
-                        </div>
-
-                        <?php if (!empty($_SESSION['nome_existe'])): ?>
-                        <div class="alert alert-danger text-center small">O nome escolhido ja existe.</div>
-                        <?php unset($_SESSION['nome_existe']); endif; ?>
-
-                        <?php if (!empty($_SESSION['usuario_existe'])): ?>
-                        <div class="alert alert-danger text-center small">O usuario escolhido ja existe.</div>
-                        <?php unset($_SESSION['usuario_existe']); endif; ?>
-
-                        <?php if (!empty($_SESSION['status_cadastro'])): ?>
-                        <div class="alert alert-success text-center small">Usuario cadastrado com sucesso.</div>
-                        <?php unset($_SESSION['status_cadastro']); endif; ?>
-
-                        <form action="?page=cadastroUsuario" method="post">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken(), ENT_QUOTES, 'UTF-8') ?>">
-
-                            <div class="form-floating mb-3">
-                                <input type="text" id="text_nome" name="text_nome" class="form-control" placeholder="Nome" required>
-                                <label for="text_nome">Nome</label>
-                            </div>
-
-                            <div class="form-floating mb-3">
-                                <input type="text" id="text_usuario" name="text_usuario" class="form-control" placeholder="Usuario" required>
-                                <label for="text_usuario">Usuario</label>
-                            </div>
-
-                            <div class="form-floating mb-3">
-                                <input type="password" id="text_senha" name="text_senha" class="form-control" placeholder="Senha" required>
-                                <label for="text_senha">Senha</label>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold" for="text_nivel_acesso">Nivel de Acesso</label>
-                                <select id="text_nivel_acesso" name="text_nivel_acesso" class="form-select" required>
-                                    <option value="user">Usuario</option>
-                                    <option value="supervisor">Supervisor</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
-                            </div>
-
-                            <button type="submit" name="submit" class="btn btn-admin-strong w-100 py-2 fw-semibold">
-                                Cadastrar
-                            </button>
-                        </form>
-                    </div>
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-cog me-2"></i>Administração do Sistema
+                    </h3>
                 </div>
-            </div>
-
-            <div class="col-md-6 col-lg-5 d-none d-md-block text-center">
-                <img src="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>/images/logo.png" alt="Cadastro de usuario" class="img-fluid u-admin-logo-side" loading="lazy">
-            </div>
-        </div>
-
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <hr class="my-4">
-                <div class="row g-3 justify-content-center admin-tools">
-                    <div class="col-12">
-                        <h5 class="fw-semibold mb-4">Ferramentas Administrativas</h5>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-tools me-2"></i>Ferramentas administrativas</h5>
+                        <p class="mb-0">Gerencie usuários, escolas, CMEIs, operadoras de link e próprios públicos cadastrados no sistema.</p>
                     </div>
-                    <div class="col-md-3 col-sm-6">
-                        <a href="?page=listarUsuario" class="btn btn-primary w-100">
-                            <i class="fas fa-users me-1"></i> Listar Usuarios
-                        </a>
+
+                    <!-- Stats row -->
+                    <div class="row mb-4">
+                        <div class="col-md-2 mb-2">
+                            <div class="card bg-primary text-white text-center h-100">
+                                <div class="card-body py-3">
+                                    <h3 class="mb-0"><?= $totalUsers ?></h3>
+                                    <small>Usuários</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="card bg-success text-white text-center h-100">
+                                <div class="card-body py-3">
+                                    <h3 class="mb-0"><?= $totalEscolas ?></h3>
+                                    <small>Escolas</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="card bg-info text-white text-center h-100">
+                                <div class="card-body py-3">
+                                    <h3 class="mb-0"><?= $totalCmeis ?></h3>
+                                    <small>CMEIs</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="card bg-warning text-white text-center h-100">
+                                <div class="card-body py-3">
+                                    <h3 class="mb-0"><?= $totalOperadoras ?></h3>
+                                    <small>Operadoras</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="card bg-secondary text-white text-center h-100">
+                                <div class="card-body py-3">
+                                    <h3 class="mb-0"><?= $totalProprios ?></h3>
+                                    <small>Próprios</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 col-sm-6">
-                        <a href="?page=auditoria_cameras" class="btn btn-success w-100">
-                            <i class="fas fa-file-alt me-1"></i> Relatorio de Auditoria
-                        </a>
+
+                    <!-- Action cards row -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                    <h5>Usuários</h5>
+                                    <p>Gerenciar contas de acesso ao sistema</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=listarUsuario" class="btn btn-primary">Listar</a>
+                                        <a href="?page=cadastroUsuario" class="btn btn-outline-primary">Novo</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-success">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-school fa-3x text-success mb-3"></i>
+                                    <h5>Escolas</h5>
+                                    <p>Relação de escolas municipais cadastradas</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=listar_escolas" class="btn btn-success">Listar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-child fa-3x text-info mb-3"></i>
+                                    <h5>CMEIs</h5>
+                                    <p>Centros Municipais de Educação Infantil</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=listar_cmeis" class="btn btn-info text-white">Listar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-network-wired fa-3x text-warning mb-3"></i>
+                                    <h5>Links / Operadoras</h5>
+                                    <p>Operadoras de link cadastradas</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=listar_operadoras" class="btn btn-warning text-dark">Listar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-secondary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-building fa-3x text-secondary mb-3"></i>
+                                    <h5>Próprios Públicos</h5>
+                                    <p>Prédios públicos municipais</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=listar_proprios" class="btn btn-secondary">Listar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-dark">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-file-alt fa-3x text-dark mb-3"></i>
+                                    <h5>Auditoria</h5>
+                                    <p>Acompanhar alterações no sistema</p>
+                                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                                        <a href="?page=auditoria_cameras" class="btn btn-dark">Auditoria</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
-
+</div>

@@ -66,7 +66,7 @@ function registerUniqueSession(database $db, int $usuarioId, string $token): voi
     $pdo->beginTransaction();
     try {
         $pdo->prepare(
-            "SELECT id FROM user_sessions WHERE usuario_id = ? FOR UPDATE"
+            "SELECT usuario_id FROM user_sessions WHERE usuario_id = ? FOR UPDATE"
         )->execute([$usuarioId]);
 
         $db->query(

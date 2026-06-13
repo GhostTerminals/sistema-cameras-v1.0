@@ -52,11 +52,26 @@
                     </ul>
                 </li>
 
-                <?php if (isset($_SESSION['usuario']) && isset($_SESSION['usuario']->nivel_acesso) && $_SESSION['usuario']->nivel_acesso === 'admin'): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="?page=administracao">
+                <?php if (isset($_SESSION['usuario']) && isset($_SESSION['usuario']->nivel_acesso) && ($_SESSION['usuario']->nivel_acesso === 'admin' || $_SESSION['usuario']->nivel_acesso === 'supervisor')): ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-cog me-1"></i>Administracao
                     </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?page=administracao"><i class="fas fa-gauge-high me-2"></i>Painel</a></li>
+                        <?php if ($_SESSION['usuario']->nivel_acesso === 'admin'): ?>
+                        <li><a class="dropdown-item" href="?page=cadastroUsuario"><i class="fas fa-user-plus me-2"></i>Cadastro de Usuarios</a></li>
+                        <li><a class="dropdown-item" href="?page=listarUsuario"><i class="fas fa-users me-2"></i>Listar Usuarios</a></li>
+                        <?php endif; ?>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="?page=listar_locais"><i class="fas fa-map-marker-alt me-2"></i>Painel de Locais</a></li>
+                        <li><a class="dropdown-item" href="?page=cadastro_locais"><i class="fas fa-plus me-2"></i>Cadastro de Local</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="?page=listar_escolas"><i class="fas fa-school me-2"></i>Escolas</a></li>
+                        <li><a class="dropdown-item" href="?page=listar_cmeis"><i class="fas fa-child me-2"></i>CMEIs</a></li>
+                        <li><a class="dropdown-item" href="?page=listar_operadoras"><i class="fas fa-network-wired me-2"></i>Operadoras / Links</a></li>
+                        <li><a class="dropdown-item" href="?page=listar_proprios"><i class="fas fa-building me-2"></i>Proprios Publicos</a></li>
+                    </ul>
                 </li>
                 <?php endif; ?>
             </ul>

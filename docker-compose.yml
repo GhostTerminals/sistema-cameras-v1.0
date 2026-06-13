@@ -3,7 +3,7 @@ services:
     build: .
     container_name: cameras-app
     ports:
-      - "127.0.0.1:8080:80"
+      - "8082:80"
     environment:
       - CAMERAS_ENV=production
       - DB_HOST=db
@@ -35,6 +35,8 @@ services:
   db:
     image: mysql:8.0.40
     container_name: cameras-db
+    ports:
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./config/DB/cftv_gml.sql:/docker-entrypoint-initdb.d/01-schema.sql

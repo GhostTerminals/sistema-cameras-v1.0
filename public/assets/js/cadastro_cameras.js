@@ -29,6 +29,11 @@ class CadastroCamera {
         if (this.tipoSelect) {
             this.tipoSelect.addEventListener("change", () => this.handleTipoChange());
         }
+
+        const tipoCameraSelect = this.form.querySelector('[name="tipo_camera"]');
+        if (tipoCameraSelect) {
+            tipoCameraSelect.addEventListener("change", () => this.handleTipoChange());
+        }
         
         if (this.toggleModeloExistente) {
             this.toggleModeloExistente.addEventListener("change", () => this.toggleTipoModelo());
@@ -212,12 +217,14 @@ class CadastroCamera {
 
     handleTipoChange() {
         const tipoId = this.tipoSelect ? parseInt(this.tipoSelect.value) : 0;
+        const tipoCameraSelect = this.form.querySelector('[name="tipo_camera"]');
+        const tipoCameraId = tipoCameraSelect ? parseInt(tipoCameraSelect.value) : 0;
 
         const secaoLPR = document.getElementById("secaoEspecificaLPR");
         const secaoDVR = document.getElementById("secaoEspecificaDVR");
         const secaoTotem = document.getElementById("secaoEspecificaTotem");
 
-        if (secaoLPR) secaoLPR.style.display = tipoId === 2 ? "" : "none";
+        if (secaoLPR) secaoLPR.style.display = (tipoId === 2 || tipoCameraId === 3) ? "" : "none";
         if (secaoDVR) secaoDVR.style.display = tipoId === 3 ? "" : "none";
         if (secaoTotem) secaoTotem.style.display = tipoId === 4 ? "" : "none";
     }
@@ -791,6 +798,9 @@ class CadastroCamera {
                 }, 500);
             }
         }
+
+        // Atualizar seções condicionais com base nos tipos carregados
+        this.handleTipoChange();
     }
 
     showLoading(show) {
